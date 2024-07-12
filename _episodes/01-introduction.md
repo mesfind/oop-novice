@@ -3,6 +3,8 @@ title: "Objects in Python"
 teaching: 20
 exercises: 15
 questions:
+- "What is object oriented programming?"
+- "When should I use object oriented programming?"
 - "What are objects in Python?"
 - "What is a class or type?"
 - "Can objects belong to more than one class?"
@@ -19,7 +21,23 @@ keypoints:
 - "Classes can inherit from other classes; objects of the subclass are automatically also of the parent class"
 ---
 
-You may recall that we calculated the mean of a Numpy array by using
+## What is object oriented programming?
+
+Since the 1990s, Python has grown immensely in popularity. As a result, the complexity of some Python packages has reached the point where their 
+application programming interface no longer reduces to simple function calls. Such packages might have an 
+_object oriented_ design. 
+
+As a Python user, you will likely need to grasp the essence of object oriented programming in order to use these packages. Such packages are built around _objects_, i.e. data structures with _attributes_ and _methods_. Attributes are properties, we can think of them as adjectives (e.g. "red", "heavy", etc.). Methods are functions that operate on the object or other objects, we can think of them as verbs (e.g "walk", "eat", ...). The concepts of objects, attributes and methods will be further demystified in the course of this workshop.
+
+## When should I use object oriented programming?
+
+Object oriented programming allows you to perform complex tasks, sometimes in more efficient way, than procedural programming (i.e. just calling functions). It also tells the programmer which operations are allowed on an object, and which are not.
+
+Consider for example a plotting package. Plotting data typically involves many fine grained operations (creating the plot, adding axis labels, title, legend etc.). On could write a function that performs all these oprations with a single call. However, this function would take a lot of arguments to control all aspects of plotting. What if you wanted to change the title? You would have to call the function again with the same arguments except for one small change. This is error prone but is also inefficient since most of the plot object was mostly fine and just needed minor tweaking.
+
+## An example showing the difference between procedurable and object-oriented programming
+
+In the procedural programming approach, the mean of a Numpy array can be computed by using
 `numpy.mean`, as
 
 ~~~
@@ -46,6 +64,11 @@ print(numbers.mean())
 ~~~
 {: .output}
 
+> ## The dot notation
+>
+> Note the `.` (dot) separating the object (`numbers`) from the `mean` method. The dot notation is a common feature of many object oriented programming languages. It means `mean` is a function that belongs to object `numbers`. 
+{: .callout}
+
 Let's see if we can do this with a normal list:
 ~~~
 more_numbers = [1, 2, 3, 4]
@@ -54,6 +77,13 @@ print(more_numbers.mean())
 {: .language-python}
 
 In this case Python will complain with an error. How does Python know it can do this for `numbers` but not `more_numbers`?
+
+> ## Discuss the advantages/disadvantages of objected oriented programming over procedural programming
+>
+>> ## Solution
+>> The procedural approach is more generic, it works both on lists and numpy arrays whereas the object oriented approach requires a specific type. This could make the object oriented approach safer.
+> {: .solution}
+{: .challenge}
 
 ## What type is it?
 Let's investigate this further by using `type` to identify what the data type of `numbers` is:
@@ -443,7 +473,24 @@ print(type(students))
 >> ~~~
 >> {: .output}
 > {: .solution}
+>
+> ## An example from the scikit-learn package
+
+> The following code solves a linear regression problem using the scikit-learn package
+> ~~~
+> from sklearn.linear_model import LinearRegression
+> model = LinearRegression(fit_intercept=False)
+> model.fit(X=[[1,],[2,]], y=[1, 2])
+> model.predict(X=[[1.5,]])
+> ~~~
+> {: .language-python}
+>
+> Identify the type of `model` and list two class methods. Find one member of the class by navigating the documentation of [LinearRegression](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html), 
+>> ## Solution
+>> `model` is of type `sklearn.linear_model._base.LinearRegression`. Here `fit` and `predict` are two methods. 
+> {: .solution}
 {: .challenge}
+
 
 ## Equality and identity
 
