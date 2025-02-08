@@ -24,27 +24,37 @@ If we wanted to plot a variety of quadratic functions, with a
 consistent set of styles, we could define a class that does this:
 
 ~~~
-from matplotlib.pyplot import show, subplots
-from numpy import linspace
+class Dataset:
+    def __init__(self, data):
+        self.data = data
+    def get_data(self):
+        return self.data
+    def summary(self):
+        raise NotImplementedError("Subclass should be implemented")
 
-class QuadraticPlotter:
-    color = 'red'
-    linewidth = 1
+class NumericalDataset(Dataset):
+    def summary(self):
+        if not self.data:
+            print("No numerical data aval")
+            return 
+        min_val  = min(self.data)
+        max_val = max(self.data)
+        avg_val = sum(self.data) / len(self.data)
+        print(f"Summary of the numerical data")
+        print(f"(Min: {min_val}, Max: {max_val}, Average: {avg_val}")
 
-    def plot(self, a, b, c):
-        """Plot the line a * x ** 2 + b * x + c and output to the screen.
-        x runs between -10 and 10, with 1000 intermediary points.
-        The line is plotted in the colour specified by color, and with width
-        linewidth."""
-
-        fig, ax = subplots()
-        x = linspace(-10, 10, 1000)
-        ax.plot(
-            x,
-            a * x ** 2 + b * x + c,
-            color=self.color,
-            linewidth=self.linewidth,
-        )
+class CategoricalDataset(Dataset):
+    def summary(self):
+        if not self.data:
+            print("No categorical data available.")
+            return
+        
+        unique_values = set(self.data)
+        counts = {value: self.data.count(value) for value in unique_values}
+        
+        print(f"Summary of Categorical Dataset:")
+        print(f"Unique values: {unique_values}")
+        print(f"Counts: {counts}")
 ~~~
 {: .language-python}
 
@@ -59,9 +69,7 @@ to refer to, methods are always given the instance as their first argument. By
 convention, the first argument of methods is always called `self`, so that the
 object can be referred to consistently whenever it is needed.
 
-Note that variables within methods are local to that method. For example, `fig`
-and `ax` will be deleted once the method finishes running. To access variables
-attached to the object, their names must be prefixed by `self.`.
+To access variables attached to the object, their names must be prefixed by `self.`.
 
 > ## Other names than `self`
 >
@@ -84,16 +92,12 @@ So far this code hasn't visibly done anything; while we have defined a class,
 we have yet to use it. Let's do that now.
 
 ~~~
-plotter = QuadraticPlotter()
-plotter.plot(1, 2, 3)
-plotter.plot(1, 0, -1)
-
-show()
+numerical_data = [10, 20, 30, 40, 50]
+categorical_data = ['apple', 'banana', 'apple', 'orange']
+num_dataset = NumericalDataset(numerical_data)
+num_dataset.summary()
 ~~~
 {: .language-python}
-
-Notice that we only supply the arguments `a`, `b`, and `c` to `plotter.plot()`—
-Python automatically adds the object to become the `self` parameter.
 
 So far, this hasn't done anything that we couldn't have done with a function
 to perform the setup and then do the plot&mdash;perhaps something like:
