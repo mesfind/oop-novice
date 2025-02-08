@@ -530,3 +530,95 @@ if __name__ == "__main__":
         print(f"Predictions from {model.__class__.__name__}: {pred}")
 ```
 
+
+### Abstraction in OOP
+
+Abstraction is the process of hiding complex implementation details and exposing only the essential features of an object. In Python, this is often achieved using abstract base classes (ABCs) and abstract methods.
+
+#### How Abstraction is Applied?
+
+1. **Abstract Base Class (`CalculatorOperation`)**
+   - The `CalculatorOperation` class is defined as an abstract base class using the `ABC` module.
+   - It contains an abstract method `operate`, which must be implemented by any concrete subclass.
+   - This ensures that all subclasses provide their own implementation of the `operate` method, while the common interface is defined in the base class.
+
+2. **Concrete Subclasses (`Addition` and `Subtraction`)**
+   - These subclasses inherit from `CalculatorOperation` and implement the `operate` method with specific logic for addition and subtraction.
+   - The internal details of how addition or subtraction is performed are hidden from the user, who only interacts with the `operate` method.
+
+3. **Usage**
+   - The user can create instances of the concrete subclasses (`Addition` and `Subtraction`) and call the `operate` method without needing to know the underlying implementation details. Let's see the following code for simple calculator to demonsitrator abstraction  in python
+
+
+```python
+from abc import ABC, abstractmethod
+
+# Abstract base class for calculator operations
+class CalculatorOperation(ABCMeta):
+    """
+    An abstract base class that defines the interface for calculator operations.
+    Any concrete operation must implement the `operate` method.
+    """
+    @abstractmethod
+    def operate(self, x, y):
+        """
+        Abstract method that must be implemented by subclasses.
+        Defines the operation to be performed on two numbers `x` and `y`.
+        """
+        pass
+
+# Concrete class for addition
+class Addition(CalculatorOperation):
+    """
+    A concrete subclass of CalculatorOperation that implements addition.
+    """
+    def operate(self, x, y):
+        """
+        Perform addition on two numbers `x` and `y`.
+
+        Parameters:
+        - x (float): The first number.
+        - y (float): The second number.
+
+        Returns:
+        - float: The result of adding `x` and `y`.
+        """
+        return x + y
+
+# Concrete class for subtraction
+class Subtraction(CalculatorOperation):
+    """
+    A concrete subclass of CalculatorOperation that implements subtraction.
+    """
+    def operate(self, x, y):
+        """
+        Perform subtraction on two numbers `x` and `y`.
+
+        Parameters:
+        - x (float): The first number.
+        - y (float): The second number.
+
+        Returns:
+        - float: The result of subtracting `y` from `x`.
+        """
+        return x - y
+
+# Usage
+if __name__ == "__main__":
+    # Create instances of the concrete subclasses
+    add = Addition()
+    subtract = Subtraction()
+
+    # Define two numbers to operate on
+    num1 = 10
+    num2 = 5
+
+    # Perform addition using the Addition class
+    result_add = add.operate(num1, num2)
+    print(f"{num1} + {num2} = {result_add}")  # Output: 10 + 5 = 15
+
+    # Perform subtraction using the Subtraction class
+    result_subtract = subtract.operate(num1, num2)
+    print(f"{num1} - {num2} = {result_subtract}")  # Output: 10 - 5 = 5
+```
+
