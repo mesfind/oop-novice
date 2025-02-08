@@ -31,28 +31,32 @@ class Dataset:
         return self.data
     def summary(self):
         raise NotImplementedError("Subclass should be implemented")
+~~~
+{: .language-python}
 
+We can then create specialized subclasses for numerical and categorical datasets
+
+~~~
 class NumericalDataset(Dataset):
     def summary(self):
         if not self.data:
-            print("No numerical data aval")
-            return 
-        min_val  = min(self.data)
+            print("No numerical data available.")
+            return
+        min_val = min(self.data)
         max_val = max(self.data)
         avg_val = sum(self.data) / len(self.data)
-        print(f"Summary of the numerical data")
-        print(f"(Min: {min_val}, Max: {max_val}, Average: {avg_val}")
+        print(f"Summary of the numerical dataset:")
+        print(f"(Min: {min_val}, Max: {max_val}, Average: {avg_val})")
+
 
 class CategoricalDataset(Dataset):
     def summary(self):
         if not self.data:
             print("No categorical data available.")
             return
-        
         unique_values = set(self.data)
         counts = {value: self.data.count(value) for value in unique_values}
-        
-        print(f"Summary of Categorical Dataset:")
+        print(f"Summary of the categorical dataset:")
         print(f"Unique values: {unique_values}")
         print(f"Counts: {counts}")
 ~~~
@@ -95,42 +99,46 @@ we have yet to use it. Let's do that now.
 numerical_data = [10, 20, 30, 40, 50]
 categorical_data = ['apple', 'banana', 'apple', 'orange']
 num_dataset = NumericalDataset(numerical_data)
+cat_dataset = CategoricalDataset(categorical_data)
 num_dataset.summary()
+cat_dataset.summary()
 ~~~
 {: .language-python}
 
-So far, this hasn't done anything that we couldn't have done with a function
-to perform the setup and then do the plot&mdash;perhaps something like:
+## Customizing Object Initialization
+
+The class keyword is used to define a new class, and both functions and variables can be created inside the class block. These will be accessible on any objects of the class that are created. When functions are defined within a class, they become methods of instances of the class. In order for the function to be aware of the object they need to refer to, methods are always given the instance as their first argument. By convention, this argument is called self.
+To access variables attached to the object, their names must be prefixed by self..
+For example, if we wanted to plot quadratic functions with customizable styles, we could define a QuadraticPlotter class
 
 ~~~
-def quadratic_plot(a, b, c, color="red"", linewidth=1):
-    """Plot the line a * x ** 2 + b * x + c and output to the screen.
-    x runs between -10 and 10, with 1000 intermediary points.
-    The line is plotted in the colour specified by color, and with width
-    linewidth."""
+from matplotlib.pyplot import subplots, show
+from numpy import linspace
 
-    fig, ax = subplots()
-    x = linspace(-10, 10, 1000)
-    ax.plot(x, a * x ** 2 + b * x + c, color=color, linewidth=linewidth)
+class QuadraticPlotter:
+    def __init__(self, color='red', linewidth=1, x_min=-10, x_max=10):
+        self.color = color
+        self.linewidth = linewidth
+        self.x_min = x_min
+        self.x_max = x_max
+
+    def plot(self, a, b, c):
+        fig, ax = subplots()
+        x = linspace(self.x_min, self.x_max, 1000)
+        y = a * x**2 + b * x + c
+        ax.plot(x, y, color=self.color, linewidth=self.linewidth)
+        show()
 ~~~
 {: .language-python}
 
-However, what if we wanted to plot some of the curves in a thick blue line?
-With this function, we could set the `color` and `linewidth` on every call,
-but that would create a lot of repetition, and hence opportunities for
-the code to become inconsistent.
-
-We could also use a `dict` to hold the common options:
+Using the QuadraticPlotter
 
 ~~~
-thick_blue = {"color": "blue", "linewidth": 5}
+default_plotter = QuadraticPlotter()
+custom_plotter = QuadraticPlotter(color='blue', linewidth=3, x_min=-5, x_max=5)
 
-quadratic_plot(3, -5, 5)
-quadratic_plot(-3, 1, 0, **thick_blue)
-quadratic_plot(2, 10, 2)
-quadratic_plot(-2, 13, 4, **thick_blue)
-
-show()
+default_plotter.plot(1, -3, 2)
+custom_plotter.plot(2, 4, -6)
 ~~~
 {: .language-python}
 
