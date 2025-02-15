@@ -62,18 +62,21 @@ class CategoricalDataset(Dataset):
 ~~~
 {: .language-python}
 
-Similarly to how `def` is used to define a function, the `class` keyword is
-used to define a new class. Both functions and variables can be created inside
-the class block, and these will be accessible on any objects of the class that are
-created.
+Similarly to how `def` is used to define a function, the `class` keyword is used to define a new class. Both functions and variables can be created inside the class block, and these will be accessible on any objects (also known as instances) of the class that are created.
 
-When functions are defined within a class, they will become methods of instances
-of the class. In order for the function to be aware of the object that they need
-to refer to, methods are always given the instance as their first argument. By
-convention, the first argument of methods is always called `self`, so that the
-object can be referred to consistently whenever it is needed.
+When functions are defined within a class, they become *methods* of the class. Methods are functions that operate on the object itself. In order for the method to access and modify the object's data, it needs a way to refer to the specific instance it's working with.  This is done through the `self` parameter.
 
-To access variables attached to the object, their names must be prefixed by `self.`.
+By convention, the first argument of a method is always named `self`. Python automatically passes the instance of the class (the object) as the first argument when you call a method on that object.  You don't need to pass it explicitly.
+
+To access variables (attributes) attached to the object, you prefix their names with `self.`.  For example, `self.data` refers to the `data` attribute of the current object.
+
+In the `Dataset` class:
+
+*   **`__init__(self, data)`**: This is the constructor method. It's automatically called when you create a new instance of the `Dataset` class.  It initializes the object's attributes, such as `self.data`, with the provided initial data. The double underscores indicate it is a special method (often called a "dunder" method).
+
+*   **`get_data(self)`**: This method returns the data currently stored within the dataset object. It allows you to access the data from outside the class.
+
+*   **`summary(self)`**: This method is designed to provide a summary of the dataset's contents.  In the base `Dataset` class, it raises a `NotImplementedError`, indicating that subclasses must override this method to provide a meaningful summary specific to their data type.  This enforces a design pattern where specialized classes *must* provide their own implementation.
 
 > ## Other names than `self`
 >
