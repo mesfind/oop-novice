@@ -1,624 +1,179 @@
 ---
-title: "Inheritance"
+title: "Inheritance in Bioinformatics"
 teaching: 20
 exercises: 20
 questions:
-- "How can classe relationships where one represents a specific subset
-of another be represented?"
-- "How can functionality on one class be overridden or extended by its
-children?"
+- "How can class relationships where one represents a specific subset of another be represented?"
+- "How can functionality on one class be overridden or extended by its children?"
 objectives:
-- "Be able to use inheritance to construct parent-child relationships between
-classes"
-- "Be able to override methods on child classes, and refer back to the parent
-class's implementations"
+- "Be able to use inheritance to construct parent-child relationships between classes"
+- "Be able to override methods on child classes, and refer back to the parent class's implementations"
 keypoints:
-- "Adding a class in parentheses after a class definition indicates
-that the new class is a subclass of the bracketed class (parent class)."
+- "Adding a class in parentheses after a class definition indicates that the new class is a subclass of the bracketed class (parent class)."
 - "The subclass inherits all of that parent class's attributes and methods."
-- "Defining a method with the same name as one of the parent class's overrides
-it."
+- "Defining a method with the same name as one of the parent class's overrides it."
 - "Use `super()` to access parent classes and their methods."
 ---
 
-We have talked about using classes as a way to reduce repetition in the
-software we write. However, what happens if we want to write two classes that
-do similar but distinct things? For example, if we wanted to write a
-`CubicPlotter` as well as our `QuadraticPlotter`, would we need to repeat all
-of the code common to both of them? What if we wanted a `QuarticPlotter` and a
-`QuinticPlotter` as well? This repetitive code would quickly start to build
-up...
+We have talked about using classes as a way to reduce repetition in the software we write. However, what happens if we want to write two classes that do similar but distinct biological data processing tasks? For example, if we wanted to write a `DNASequence` class as well as our generic `BiologicalSequence` class, would we need to repeat all of the code common to both of them? What if we wanted an `RNASequence` class or a `ProteinSequence` class as well? This repetitive code would quickly start to build up...
 
-Thankfully, Python (and most other languages that have classes) give us a
-mechanism to avoid this in the form of _inheritance_. A class that inherits
-from a second class automatically gains all of the second's attributes and
-methods. The class that is being inherited from is called the _parent class_,
-_superclass_, or _base class_, while the new class inheriting from it is called
-the _child class_, _subclass_, or _derived class_.
+Thankfully, Python (and most other languages that have classes) give us a mechanism to avoid this in the form of _inheritance_. A class that inherits from a second class automatically gains all of the second's attributes and methods. The class that is being inherited from is called the _parent class_, _superclass_, or _base class_, while the new class inheriting from it is called the _child class_, _subclass_, or _derived class_.
 
-We saw earlier that `ValueError` is a subclass of `Exception`, and that this
-can be used to handle both specific and more general exceptions in a
-hierarchy. We can also use this to define our own exceptions. Say, for
-example, we have a function to convert temperatures from degrees Celsius to
-degrees Fahrenheit,
-\\(\theta_{\mathrm{F}}(\theta_{\mathrm{C}})=\frac{9}{5}\theta_{\mathrm{C}} +
-32\\).
-We know that temperatures below absolute zero are not valid, so if we
-encounter those in our code we would like to raise the alarm as soon as
-possible; we could do this with an `assert`, but another way of expressing this
-could be by defining our own exception to flag this. A temperature below
-\\(-273.15^\circ\mathrm{C}\\) is an example of a bad _value_, so this would want to
-inherit from `ValueError`.
+We saw earlier that `ValueError` is a subclass of `Exception`, and that this can be used to handle both specific and more general exceptions in a hierarchy. We can also use this to define our own exceptions. Say, for example, we have a function to validate a DNA sequence. We know that invalid nucleotide bases are not allowed, so if we encounter these in our code we would like to raise the alarm as soon as possible; we could do this with an `assert`, but another way of expressing this could be by defining our own exception to flag this. A nucleotide other than A, C, G, T is an example of a bad _value_, so this would want to inherit from `ValueError`.
 
 ~~~
-class InvalidTemperatureError(ValueError):
+class InvalidSequenceError(ValueError):
     pass
 
-def celsius_to_fahrenheit(temperature_c):
-    if temperature_c < -273.15:
-        raise InvalidTemperatureError
-    return temperature_c * 9 / 5 + 32
+def validate_dna_sequence(seq):
+    if not all(base in "ACGT" for base in seq.upper()):
+        raise InvalidSequenceError(f"Invalid character found in DNA sequence: {seq}")
 ~~~
 {: .language-python}
 
-The `pass` keyword here tells Python that while we have started an indented
-block, we don't actually have anything to put in it. (If we were to omit it,
-Python would complain at us that it expected a block and didn't get one.) So we
-have constructed a new class called `InvalidTemperatureError`, which is an
-exact copy of `ValueError`, except that it knows that `ValueError` is its
-parent. Let's test this.
+The `pass` keyword here tells Python that while we have started an indented block, we don't actually have anything to put in it. (If we were to omit it, Python would complain at us that it expected a block and didn't get one.) So we have constructed a new class called `InvalidSequenceError`, which is an exact copy of `ValueError`, except that it knows that `ValueError` is its parent. Let's test this.
 
 ~~~
-for temperature_c in 0, 100, -300:
-    print(temperature_c, "degrees Celsius is",
-          celsius_to_fahrenheit(temperature_c), "degrees Fahrenheit")
+for seq in ["ACGT", "acgt", "ACBX"]:
+    print(f"Validating sequence: {seq}")
+    validate_dna_sequence(seq)
+    print("Valid sequence.")
 ~~~
 {: .language-python}
 
 ~~~
-0 degrees Celsius is 32.0 degrees Fahrenheit
-100 degrees Celsius is 212.0 degrees Fahrenheit
+Validating sequence: ACGT
+Valid sequence.
+Validating sequence: acgt
+Valid sequence.
+Validating sequence: ACBX
 Traceback (most recent call last):
-  File "<stdin>", line 3, in <module>
-  File "<stdin>", line 3, in celsius_to_fahrenheit
-__main__.InvalidTemperatureError
+  File "<stdin>", line 4, in <module>
+  File "<stdin>", line 3, in validate_dna_sequence
+__main__.InvalidSequenceError: Invalid character found in DNA sequence: ACBX
 ~~~
 {: .output}
 
-If we wanted to, we could catch this exception with `except
-InvalidTemperatureError` or with `except ValueError` (or even `except
-Exception`).
+If we wanted to, we could catch this exception with `except InvalidSequenceError` or with `except ValueError` (or even `except Exception`).
 
-What about if we want to add functionality? Let's consider an example
-of a `Polygon` class, which can calculate its perimeter.
+What about if we want to add functionality? Let's consider an example of a generic `BiologicalSequence` class, which can calculate length and GC content.
 
 ~~~
-class Polygon:
-    def __init__(self, side_lengths):
-        self.side_lengths = side_lengths
+class BiologicalSequence:
+    def __init__(self, sequence):
+        self.sequence = sequence.upper()
 
-    def perimeter(self):
-        """Returns the perimeter of the polygon."""
-        return sum(self.side_lengths)
+    def length(self):
+        return len(self.sequence)
 
-some_shape = Polygon([1, 2, 3, 4, 5])
-print(some_shape.perimeter())
+    def gc_content(self):
+        gc_count = sum(base in "GC" for base in self.sequence)
+        return gc_count / self.length()
+        
+some_seq = BiologicalSequence("ATGCGATACG")
+print("Length:", some_seq.length())
+print("GC Content:", some_seq.gc_content())
 ~~~
 {: .language-python}
 
 ~~~
-15
+Length: 10
+GC Content: 0.5
 ~~~
 {: .output}
 
-Now, we know more about triangles than we do about generic polygons,
-so we can create a specialised subclass of `Polygon` called
-`Triangle`. For example, for a triangle of sides \\(a\\), \\(b\\), and \\(c\\),
-Heron's formula states that the perimeter of the triangle is given by
-\\(\sqrt{p(p-a)(p-b)(p-c)}\\), where \\(p=\frac{1}{2}(a+b+c)\\).
+Now, we know more details about DNA sequences than we do about generic biological sequences, so we can create a specialized subclass of `BiologicalSequence` called `DNASequence`. For example, for DNA sequences, we want to validate the sequence and calculate its complement.
 
 ~~~
-class Triangle(Polygon):
-    def __init__(self, side_lengths):
-        # Triangles have three sides
-        assert len(side_lengths) == 3
-        self.side_lengths = side_lengths
+class DNASequence(BiologicalSequence):
+    def __init__(self, sequence):
+        super().__init__(sequence)
+        self.validate()
 
-    def area(self):
-        """Returns the area of the triangle."""
-        a, b, c = self.side_lengths
-        p = self.perimeter() / 2
-        return (p * (p - a) * (p - b) * (p - c)) ** 0.5
+    def validate(self):
+        if not all(base in "ACGT" for base in self.sequence):
+            raise InvalidSequenceError(f"Invalid DNA sequence: {self.sequence}")
 
-a_triangle = Triangle([3, 4, 5])
-print("Perimeter:", a_triangle.perimeter())
-print("Area:", a_triangle.area())
+    def complement(self):
+        complement_map = str.maketrans("ACGT", "TGCA")
+        return self.sequence.translate(complement_map)
+
+dna = DNASequence("ATGC")
+print("Sequence:", dna.sequence)
+print("Complement:", dna.complement())
 ~~~
 {: .language-python}
 
 ~~~
-Perimeter: 12
-Area: 6.0
+Sequence: ATGC
+Complement: TACG
 ~~~
 {: .output}
 
-We've done a few new things here. Firstly, we've overridden the
-`__init__` method of the `Polygon` parent class, since we now need to
-check that the sides that the shape is being given form a triangle,
-and not some other shape. This means that only the `__init__` method
-from the `Triangle` class is called, and not the one in the `Polygon`
-class. Next, we've defined a new method `area`, which is only
-available on the `Triangle` class. We've also called the `perimeter`
-method, which is defined on the `Polygon` parent class&mdash;we don't
-have to recreate this, since we can use it as-is.
+We've done a few new things here. Firstly, we've overridden the `__init__` method of the `BiologicalSequence` parent class, since we now need to validate the sequence specifically for DNA. This means that only the `__init__` method from the `DNASequence` class is called, and not the one in the `BiologicalSequence` class directly. However, we use `super().__init__(sequence)` to call the parent class's initializer to set the `sequence` attribute, avoiding code repetition. Next, we've defined a new method `complement`, which is only available on the `DNASequence` class.
 
-One niggling issue is that we are still repeating ourselves a little
-here. The line `self.side_lengths = side_lengths` appears in the
-`__init__` method of both classes. If we can, we'd like to remove this
-by using the equivalent method from the `Polygon` class. In principle
-we could use `Polygon.__init__`, but this still has some repetition,
-since we have to specify the name of the `Polygon` class more than
-once, even though the class knows what its parent class is.
-
-What we can do instead is make use of the `super()` function. This
-gives us access to the superclass (and any superclasses further up the
-chain), without having to refer to any one of them by name. When we
-call a method of the `super()` object, Python automatically works its
-way up the tree until the first class which has a method of the
-correct name, and calls that. The `Triangle` class would then become:
-
-~~~
-class Triangle(Polygon):
-    def __init__(self, side_lengths):
-        # Triangles have three sides
-        assert len(side_lengths) == 3
-        super().__init__(side_lengths)
-
-    def area(self):
-        """Returns the area of the triangle."""
-        a, b, c = self.side_lengths
-        p = (a + b + c) / 2
-        return (p * (p - a) * (p - b) * (p - c)) ** 0.5
-~~~
-{: .language-python}
-
-(You can see that `super()` has also taken care of the `self` argument
-for us, which using `Polygon` directly wouldn't do.)
-
-While in this case we have only saved a single line of repetition,
-making use of `super()` becomes essential as methods become
-increasingly complex and build up functionality in layers.
+One niggling issue is that we are still repeating ourselves a little here. The logic to convert a sequence to uppercase exists in both classes. Using `super()` helps manage this layering properly.
 
 > ## Not implemented
 >
-> If we anticipate a lot of subclasses may provide a particular
-> method, but we can't or don't want to provide it on the superclass,
-> we can add a stub method that raises `NotImplementedError` instead,
-> so that it becomes clear if an implementation has been
-> forgotten. For example, the `area` method of `Polygon` could be:
+> If we anticipate subclasses may provide particular methods, but we can't or don't want to provide them on the superclass, we can add a stub method that raises `NotImplementedError` instead, so it becomes clear if an implementation has been forgotten. For example, the `transcribe` method of `BiologicalSequence` could be:
 >
 > ~~~
-> def area(self):
->     raise NotImplementedError
+> def transcribe(self):
+>     raise NotImplementedError("Subclasses should implement transcription.")
 > ~~~
 > {: .language-python}
 {: .callout}
 
 > ## Inheriting from `object`
 >
-> Sometimes in older Python you will see classes inherit from
-> `object`. This is a holdover from Python 2, where this was needed to
-> create a "new-style" class instead of an "old-style"
-> class. Old-style classes were removed in Python 3, with all classes
-> being new-style ones which inherit from `object` automatically, so
-> you don't need to (and shouldn't) do this any more.
+> Sometimes, especially in older Python versions, you will see classes inherit from `object`. This was needed to create "new-style" classes in Python 2. In Python 3 and later, all classes inherit from `object` automatically, so it is not necessary.
 {: .callout}
 
-> ## `super()` placement
+> ## `super()` placement challenge
 >
-> A four-sided shape where one of the side lengths is zero is a
-> triangle. We can adjust the `__init__` method of the `Polygon`
-> to reflect this by removing any zero-length sides before storing
-> the list of side lengths. The method then becomes:
+> Suppose we want to build a `ProteinCodingGene` class that inherits from the `Gene` class. We want to ensure gene sequences are validated by the parent `Gene` class before adding translation logic. Here is how we could structure them:
 >
 > ~~~
-> def __init__(self, side_lengths):
->     filtered_side_lengths = []
->     for side_length in side_lengths:
->         assert side_length >= 0
->         if side_length > 0:
->             filtered_side_lengths.append(side_length)
->     self.side_lengths = filtered_side_lengths
+> class Gene:
+>     def __init__(self, locus, sequence):
+>         self.locus = locus
+>         self.sequence = sequence.upper()
+>         self.validate()
+>
+>     def validate(self):
+>         # Base validation to be extended
+>         if not self.sequence:
+>             raise ValueError("Sequence cannot be empty.")
+>
+> class ProteinCodingGene(Gene):
+>     def __init__(self, locus, sequence, transcript_id):
+>         super().__init__(locus, sequence)
+>         self.transcript_id = transcript_id
+>
+>     def validate(self):
+>         # Extend gene validation to check start codon for protein coding genes
+>         super().validate()
+>         if not self.sequence.startswith("ATG"):
+>             raise ValueError("Protein coding gene must start with 'ATG'")
+>
+>     def translate(self):
+>         # Simplified translation stub
+>         return "M"  # Just the first amino acid Methionine here
 > ~~~
-> {: .language-python}
 >
-> How does this affect our implementation of `Triangle.__init__`?
-> Adjust this so that `Triangle([3, 4, 0, 5])` works, and
-> `Triangle([3, 4, 0])` does not.
->
->> ## Solution
->>
->> We now need to call `super().__init__` _before_ checking the
->> lengths, and check the resulting instance variable rather than the
->> `side_lengths` argument.
->>
->> ~~~
->> class Polygon:
->>     def __init__(self, side_lengths):
->>         filtered_side_lengths = []
->>         for side_length in side_lengths:
->>             assert side_length >= 0
->>             if side_length > 0:
->>                 filtered_side_lengths.append(side_length)
->>         self.side_lengths = filtered_side_lengths
->>
->>     def perimeter(self):
->>         """Returns the perimeter of the polygon."""
->>         return sum(self.side_lengths)
->>
->>  class Triangle(Polygon):
->>     def __init__(self, side_lengths):
->>         # Triangles have three sides
->>         super().__init__(side_lengths)
->>         assert len(self.side_lengths) == 3
->>
->>     def area(self):
->>         """Returns the area of the triangle."""
->>         a, b, c = self.side_lengths
->>         p = (a + b + c) / 2
->>         return (p * (p - a) * (p - b) * (p - c)) ** 0.5
->>
->> a_triangle = Triangle([3, 4, 0, 5])
->> print("Perimeter:", a_triangle.perimeter())
->> print("Area:", a_triangle.area())
->> b_triangle = Triangle([3, 4, 0])
->> ~~~
->> {: .language-python}
->>
->> ~~~
->> Perimeter: 12
->> Area: 6.0
->> ---------------------------------------------------------------------------
->> AssertionError                            Traceback (most recent call last)
->> <ipython-input-17-751f0372a229> in <module>()
->>      27 print("Perimeter:", a_triangle.perimeter())
->>      28 print("Area:", a_triangle.area())
->> ---> 29 b_triangle = Triangle([3, 4, 0])
->>
->> <ipython-input-17-751f0372a229> in __init__(self, side_lengths)
->>      16         # Triangles have three sides
->>      17         super().__init__(side_lengths)
->> ---> 18         assert len(self.side_lengths) == 3
->>      19
->>      20     def area(self):
->>
->> AssertionError:
->> ~~~
->> {: .output}
->>
->> Where to place your call to `super()` is an important thing to
->> consider when writing subclasses!
-> {: .solution}
+> This example shows how important it is to place the call to `super()` correctly so parent's validations are retained and extended.
 {: .challenge}
 
-> ## Rectangles
+> ## Bioinformatics Exercises
 >
-> Write another subclass of `Polygon` to represent rectangles, and add
-> a method to calculate their area.
+> 1. Write a subclass `RNASequence` of `BiologicalSequence` which overrides the `validate` method to allow only bases "ACGU".
 >
->> ## Solution
->>
->> ~~~
->> class Rectangle(Polygon):
->>     def __init__(self, side_lengths):
->>         super().__init__(side_lengths)
->>         num_sides = len(self.side_lengths)
->>         assert num_sides == 2 or num_sides == 4
->>         if num_sides == 2:
->>             width, height = side_lengths
->>             self.side_lengths = [width, height, width, height]
->>         else:
->>             assert self.side_lengths[0] == self.side_lengths[2]
->>             assert self.side_lengths[1] == self.side_lengths[3]
->>
->>     def area(self):
->>         return self.side_lengths[0] * self.side_lengths[1]
->> ~~~
->> {: .language-python}
-> {: .solution}
+> 2. Extend the `ProteinCodingGene` class to implement a `translate` method converting DNA codons to amino acids using a codon table.
+>
+> 3. Create a `Genome` class that contains multiple `Gene` objects and implements methods to:
+>    - Add genes
+>    - Calculate total genome length (sum of gene lengths)
+>    - Retrieve all protein-coding genes
 {: .challenge}
-
-> ## Polynomial plotters
->
-> In the previous episode, we wrote a `QuadraticPlotter` class for
-> plotting quadratic functions. We know, however, that quadratics are
-> not the only type of polynomial in the world.
->
-> Write a `PolynomialPlotter` class similar to `QuadraticPlotter`, and
-> rewrite `QuadraticPlotter` to be a subclass of it.
->
->> ## Solution
->>
->> ~~~
->> from numpy import linspace
->> from matplotlib.pyplot import subplots
->> from matplotlib.colors import is_color_like
->>
->> class PolynomialPlotter:
->>     def __init__(self, color="red", linewidth=1, x_min=-10, x_max=10):
->>         assert is_color_like(color)
->>         self.color = color
->>         self.linewidth = linewidth
->>         self.x_min = x_min
->>         self.x_max = x_max
->>
->>     def polynomial(self, x, coefficients):
->>         """For a given x and list of n+1 coefficients [a, b, c, d, ...],
->>         returns the polynomial f(x) = ax^n + bx^(n-1) + cx^(n-2) + ..."""
->>         result = 0
->>         for coefficient in coefficients:
->>             result = result * x + coefficient
->>         return result
->>
->>     def plot(self, coefficients):
->>         """Given the list of coefficients [a, b, c, d, ...],
->>         plot the polynomial f(x) = ax^n + bx^(n-1) + cx^(n-2) + ... .
->>         The line is plotted in the colour specified by color, and with width
->>         linewidth."""
->>         fig, ax = subplots()
->>         x = linspace(self.x_min, self.x_max, 1000)
->>         ax.plot(
->>             x,
->>             self.polynomial(x, coefficients),
->>             color=self.color,
->>             linewidth=self.linewidth,
->>         )
->>
->> class QuadraticPlotter(PolynomialPlotter):
->>     def plot(self, a, b, c):
->>         super().plot([a, b, c])
->> ~~~
->> {: .language-python}
-> {: .solution}
-{: .challenge}
-
-> ## More general function plotters
->
-> Taking this a step further, write a more general `FunctionPlotter`
-> class, and adjust `PolynomialPlotter` to be a subclass of it.
->
->> ## Solution
->>
->> ~~~
->> class FunctionPlotter:
->>     def __init__(self, color="red", linewidth=1, x_min=-10, x_max=10):
->>         assert is_color_like(color)
->>         self.color = color
->>         self.linewidth = linewidth
->>         self.x_min = x_min
->>         self.x_max = x_max
->>
->>     def plot(self, function):
->>         """Plot a function of a single argument.
->>         The line is plotted in the colour specified by color, and with width
->>         linewidth."""
->>         fig, ax = subplots()
->>         x = linspace(self.x_min, self.x_max, 1000)
->>         ax.plot(x, function(x), color=self.color, linewidth=self.linewidth)
->>
->>
->> class PolynomialPlotter(FunctionPlotter):
->>     def plot(self, coefficients):
->>         """Given the list of coefficients [a, b, c, d, ...],
->>         plot the polynomial f(x) = ax^n + bx^(n-1) + cx^(n-2) + ... .
->>         The line is plotted in the colour specified by color, and with width
->>         linewidth."""
->>         def polynomial(x):
->>             """For a given x and list of n+1 coefficients [a, b, c, d, ...],
->>             returns the polynomial f(x) = ax^n + bx^(n-1) + cx^(n-2) + ..."""
->>             result = 0
->>             for coefficient in coefficients:
->>                 result = result * x + coefficient
->>             return result
->>         super().plot(polynomial)
->>
->>
->> class QuadraticPlotter(PolynomialPlotter):
->>     def plot(self, a, b, c):
->>        """Plot the line a * x ** 2 + b * x + c and output to the screen.
->>        x runs between x_min and x_max, with 1000 intermediary points.
->>        The line is plotted in the colour specified by color, and with width
->>        linewidth."""
->>         super().plot([a, b, c])
->> ~~~
->> {: .language-python}
->>
->> Defining a function within another function as we do in
->> `PolynomialPlotter` is a useful way of
->> parametrising functions without having to pass arguments every time.
-> {: .solution}
-{: .challenge}
-
-
-### Encapsulation
-Encapsulation is the practice of bundling data (attributes) and methods that operate on the data into a single unit (class), while restricting direct access to some components. This ensures that the internal state of an object is protected from unintended modification.
-
-#### How Encapsulation is Applied?
-
-1. **`BaseModel` Class**
-   - The `BaseModel` class defines the interface for all models (`train` and `predict` methods).
-   - These methods are declared as abstract by raising `NotImplementedError`, ensuring that any subclass must implement them. This enforces a consistent structure across all model types.
-
-2. **`KNN` Class**
-   - The `KNN` class encapsulates the training data (`X_train` and `y_train`) and the prediction logic.
-   - The `train` method stores the training data internally, and the `predict` method uses this data to compute predictions without exposing the internal details.
-
-3. **`WrapperLR` Class**
-   - The `WrapperLR` class encapsulates the `LinearRegression` model from `sklearn`.
-   - It provides a unified interface (`train` and `predict`) for interacting with the model, hiding the specifics of how `LinearRegression` works internally.
-
-By encapsulating the data and logic within each class, the code ensures that the internal implementation details are hidden from the user, promoting modularity and maintainability.
-
-
-### Polymorphism
-Polymorphism allows objects of different classes to be treated as objects of a common superclass. This enables the same interface to be used for different underlying forms (data types).
-
-#### How Polymorphism is Applied ?
-1. **Common Interface**
-   - Both `KNN` and `WrapperLR` inherit from the `BaseModel` class, implementing the `train` and `predict` methods.
-   - This means that regardless of the specific model type, they can be used interchangeably wherever a `BaseModel` is expected.
-
-2. **Dynamic Behavior**
-   - In the `for` loop in the `if __name__ == "__main__":` block, both `WrapperLR` and `KNN` instances are stored in the `models` list.
-   - The `train` and `predict` methods are called on each model without needing to know their specific types. The correct implementation of these methods is invoked dynamically based on the actual type of the object.
-
-This demonstrates polymorphism, where the same method name (`train` or `predict`) behaves differently depending on the object it is called on.
-
-
-```python
-import numpy as np
-from sklearn.linear_model import LinearRegression
-
-# Define a base class for all models (Encapsulation: Defines a common interface)
-class BaseModel:
-    def train(self, X, y):
-        raise NotImplementedError("Subclasses must implement this method.")
-    
-    def predict(self, X):
-        raise NotImplementedError("Subclasses must implement this method.")
-
-# KNN model (Encapsulation: Encapsulates KNN logic and data)
-class KNN(BaseModel):
-    def train(self, X, y):
-        # Store training data internally (Encapsulation: Protects data)
-        self.X_train = X
-        self.y_train = y
-    
-    def predict(self, X):
-        # Compute distances and find nearest neighbors (Encapsulation: Hides computation details)
-        distances = np.linalg.norm(X[:, None] - self.X_train, axis=2)
-        nearest_indices = np.argmin(distances, axis=1)
-        return self.y_train[nearest_indices]
-
-# Wrapper for Linear Regression (Encapsulation: Wraps sklearn's LinearRegression)
-class WrapperLR(BaseModel):
-    def __init__(self):
-        # Encapsulate the LinearRegression model
-        self.model = LinearRegression()
-    
-    def train(self, X, y):
-        # Train the encapsulated model (Encapsulation: Hides training details)
-        self.model.fit(X, y)
-    
-    def predict(self, X):
-        # Use the encapsulated model for prediction (Encapsulation: Hides prediction details)
-        return self.model.predict(X)
-
-# Example usage (Polymorphism: Treats different models uniformly)
-if __name__ == "__main__":
-    np.random.seed(42)
-    X = np.random.rand(10, 2)  # 10 samples, 2 features
-    y = np.random.rand(10)     # Target values
-
-    # Create a list of models (Polymorphism: Both models conform to BaseModel interface)
-    models = [WrapperLR(), KNN()]
-
-    # Train and predict using each model (Polymorphism: Same interface for different implementations)
-    for model in models:
-        model.train(X, y)  # Calls the appropriate train method based on the model type
-        pred = model.predict(X)  # Calls the appropriate predict method based on the model type
-        print(f"Predictions from {model.__class__.__name__}: {pred}")
-```
-
-
-### Abstraction in OOP
-
-Abstraction is the process of hiding complex implementation details and exposing only the essential features of an object. In Python, this is often achieved using abstract base classes (ABCs) and abstract methods.
-
-#### How Abstraction is Applied?
-
-1. **Abstract Base Class (`CalculatorOperation`)**
-   - The `CalculatorOperation` class is defined as an abstract base class using the `ABC` module.
-   - It contains an abstract method `operate`, which must be implemented by any concrete subclass.
-   - This ensures that all subclasses provide their own implementation of the `operate` method, while the common interface is defined in the base class.
-
-2. **Concrete Subclasses (`Addition` and `Subtraction`)**
-   - These subclasses inherit from `CalculatorOperation` and implement the `operate` method with specific logic for addition and subtraction.
-   - The internal details of how addition or subtraction is performed are hidden from the user, who only interacts with the `operate` method.
-
-3. **Usage**
-   - The user can create instances of the concrete subclasses (`Addition` and `Subtraction`) and call the `operate` method without needing to know the underlying implementation details. Let's see the following code for simple calculator to demonsitrator abstraction  in python
-
-
-```python
-from abc import ABC, abstractmethod
-
-# Abstract base class for calculator operations
-class CalculatorOperation(ABCMeta):
-    """
-    An abstract base class that defines the interface for calculator operations.
-    Any concrete operation must implement the `operate` method.
-    """
-    @abstractmethod
-    def operate(self, x, y):
-        """
-        Abstract method that must be implemented by subclasses.
-        Defines the operation to be performed on two numbers `x` and `y`.
-        """
-        pass
-
-# Concrete class for addition
-class Addition(CalculatorOperation):
-    """
-    A concrete subclass of CalculatorOperation that implements addition.
-    """
-    def operate(self, x, y):
-        """
-        Perform addition on two numbers `x` and `y`.
-
-        Parameters:
-        - x (float): The first number.
-        - y (float): The second number.
-
-        Returns:
-        - float: The result of adding `x` and `y`.
-        """
-        return x + y
-
-# Concrete class for subtraction
-class Subtraction(CalculatorOperation):
-    """
-    A concrete subclass of CalculatorOperation that implements subtraction.
-    """
-    def operate(self, x, y):
-        """
-        Perform subtraction on two numbers `x` and `y`.
-
-        Parameters:
-        - x (float): The first number.
-        - y (float): The second number.
-
-        Returns:
-        - float: The result of subtracting `y` from `x`.
-        """
-        return x - y
-
-# Usage
-if __name__ == "__main__":
-    # Create instances of the concrete subclasses
-    add = Addition()
-    subtract = Subtraction()
-
-    # Define two numbers to operate on
-    num1 = 10
-    num2 = 5
-
-    # Perform addition using the Addition class
-    result_add = add.operate(num1, num2)
-    print(f"{num1} + {num2} = {result_add}")  # Output: 10 + 5 = 15
-
-    # Perform subtraction using the Subtraction class
-    result_subtract = subtract.operate(num1, num2)
-    print(f"{num1} - {num2} = {result_subtract}")  # Output: 10 - 5 = 5
-```
 
