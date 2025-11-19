@@ -350,3 +350,119 @@ Place figures in the right column
 * Figure 5 functional composition
 
 
+## Phylogenetics Challenges
+
+Phylogenetics is the focus keyword.
+These challenges cover sequence preparation, alignment, tree building, model testing, and evolutionary interpretation.
+
+### Challenge 1
+
+Sequence acquisition and preprocessing
+
+Tasks
+
+* Import a set of gene sequences from multiple species
+* Clean sequence names
+* Check for ambiguous bases
+* Remove sequences with high missing content
+* Produce a table showing sequence length per species
+
+Outputs
+
+* Curated FASTA file
+* Length summary table
+* Short scientific note on sequence quality
+
+### Challenge 2
+
+Multiple sequence alignment
+
+Tasks
+
+* Align all sequences using a standard alignment method
+* Inspect alignment length and gap distribution
+* Produce an alignment quality plot placed in the right column
+
+Outputs
+
+* Aligned FASTA file
+* Alignment statistics table
+* Quality plot
+
+### Challenge 3
+
+Model selection
+
+Tasks
+
+* Evaluate substitution models
+* Compare fit of candidate models
+* Select the best fitting model using information criteria
+* Produce a table summarizing model scores
+
+Outputs
+
+* Model score table
+* Scientific justification of the selected model
+
+### Challenge 4
+
+Tree inference
+
+Tasks
+
+* Build a phylogenetic tree using the selected model
+* Generate a second tree using a different method for comparison
+* Root the tree with an outgroup
+* Produce a tree figure in the right column
+
+Outputs
+
+* Tree files
+* Rooted tree figure
+* Short interpretation of major clades
+
+### Challenge 5
+
+Bootstrap support assessment
+
+Tasks
+
+* Run bootstrap analysis
+* Quantify support for each node
+* Produce a support distribution plot
+* Summarize nodes with low support
+
+Outputs
+
+* Bootstrap trees
+* Support plot
+* Table of nodes with low support values
+
+### Challenge 6
+
+Molecular clock analysis
+
+Tasks
+
+* Test for clock-like behavior
+* Apply a relaxed molecular clock if needed
+* Estimate divergence times
+* Produce a time calibrated tree
+
+Outputs
+
+* Time calibrated tree file
+* Table of estimated divergence times
+* Short interpretation of temporal patterns
+
+### Challenge Figures
+
+Place figures in the right column
+
+* Figure 1 alignment quality profile
+* Figure 2 rooted phylogenetic tree
+* Figure 3 bootstrap support distribution
+* Figure 4 time calibrated tree
+
+
