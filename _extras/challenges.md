@@ -233,3 +233,120 @@ Place figures in the right column
 * Figure 5 enriched pathways
 
 
+## Metagenomics Challenges
+
+Metagenomics is the focus keyword.
+These challenges build skills in taxonomic profiling, assembly, binning, and functional analysis of microbial communities.
+
+### Challenge 1
+
+Raw metagenomic read assessment
+
+Tasks
+
+* Load FASTQ files from mixed microbial samples
+* Quantify total reads per sample
+* Compute per base quality metrics
+* Examine GC profiles and sequence complexity
+* Produce a quality plot placed in the right column
+
+Outputs
+
+* Table of read counts
+* Quality plot
+* Short scientific summary
+
+### Challenge 2
+
+Host read removal
+
+Tasks
+
+* Align reads to the host genome
+* Remove mapped reads
+* Produce a clean set of microbial reads
+* Summarize retained read counts
+
+Outputs
+
+* Filtered FASTQ files
+* Table of removed and retained reads
+* Short interpretation
+
+### Challenge 3
+
+Taxonomic profiling
+
+Tasks
+
+* Run a taxonomic classifier on the cleaned reads
+* Produce relative abundance data
+* Generate a bar plot showing taxa proportions across samples
+
+Outputs
+
+* Taxonomic abundance table
+* Bar plot in the right column
+* Summary of dominant taxa
+
+### Challenge 4
+
+Metagenomic assembly
+
+Tasks
+
+* Assemble reads into contigs
+* Evaluate assembly quality using length and N50 metrics
+* Produce a contig length distribution plot
+
+Outputs
+
+* Contig FASTA file
+* Table of assembly metrics
+* Contig length plot
+
+### Challenge 5
+
+Genome binning
+
+Tasks
+
+* Group contigs into bins based on sequence composition and coverage
+* Assess bin completeness and contamination
+* Generate a table summarizing all bins
+
+Outputs
+
+* Bin directories
+* Table of completeness and contamination metrics
+* Interpretation of high quality bins
+
+### Challenge 6
+
+Functional annotation
+
+Tasks
+
+* Predict genes from bins or contigs
+* Map predicted genes to functional categories
+* Produce a functional abundance table
+* Generate a functional composition plot
+
+Outputs
+
+* Gene prediction output
+* Functional annotation table
+* Functional profile plot in the right column
+* Scientific interpretation of functional patterns
+
+### Challenge Figures
+
+Place figures in the right column
+
+* Figure 1 quality profile
+* Figure 2 taxa proportions
+* Figure 3 contig distribution
+* Figure 4 bin quality metrics
+* Figure 5 functional composition
+
+
