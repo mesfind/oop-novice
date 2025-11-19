@@ -1,633 +1,162 @@
 ---
-title: "Writing classes"
+title: "Writing classes in Bioinformatics"
 teaching: 20
 exercises: 25
 questions:
-- "How are classes written in Python?"
-- "What do methods look like?"
-- "How can a class customise how its instances are constructed?"
+- "How are classes written in Python for bioinformatics applications?"
+- "What do methods look like in bioinformatics classes?"
+- "How can a bioinformatics class customize instance construction and validation?"
 objectives:
-- "Write classes from scratch"
-- "Write methods for classes"
-- "Write custom `__init__` methods"
+- "Write bioinformatics-related classes from scratch"
+- "Write methods targeting biological sequence or genomic data"
+- "Write custom `__init__` methods for initialization and validation in bioinformatics contexts"
 keypoints:
 - "Classes in Python are blocks started with the `class` keyword"
 - "Method definitions look like functions, but must take a `self` argument"
 - "The `__init__` method is called when instances are constructed"
+- "Bioinformatics classes often include validation and domain-specific logic in `__init__`"
 ---
 
-In the previous section, we've seen how objects can have different behaviour, provided by methods, which in turn are provided by the class of an object.
+In the previous section, we've seen how objects can have different behavior, provided by methods, which in turn are provided by the class of an object.
 
-But what if we want to make our own classes and objects?
+But what if we want to make our own classes and objects for representing biological data?
 
-If we wanted to plot a variety of quadratic functions, with a
-consistent set of styles, we could define a class that does this:
+If we wanted to create a hierarchy of biological sequences, with consistent methods for summary and validation, we could define a class that does this:
 
 ~~~
-class Dataset:
-    def __init__(self, data):
-        self.data = data
-    def get_data(self):
-        return self.data
+class BiologicalSequence:
+    def __init__(self, sequence):
+        self.sequence = sequence.upper()
+
+    def get_sequence(self):
+        return self.sequence
+
     def summary(self):
-        raise NotImplementedError("Subclass should be implemented")
+        raise NotImplementedError("Subclass should implement summary")
 ~~~
 {: .language-python}
 
-We can then create specialized subclasses for numerical and categorical datasets
+We can then create specialized subclasses for DNA and protein sequences:
 
 ~~~
-class NumericalDataset(Dataset):
+class DNASequence(BiologicalSequence):
     def summary(self):
-        if not self.data:
-            print("No numerical data available.")
-            return
-        min_val = min(self.data)
-        max_val = max(self.data)
-        avg_val = sum(self.data) / len(self.data)
-        print(f"Summary of the numerical dataset:")
-        print(f"(Min: {min_val}, Max: {max_val}, Average: {avg_val})")
+        length = len(self.sequence)
+        gc_content = sum(base in "GC" for base in self.sequence) / length
+        print(f"DNA sequence length: {length}")
+        print(f"GC content: {gc_content:.2%}")
+
+    def validate(self):
+        if not all(base in "ACGT" for base in self.sequence):
+            raise ValueError("Invalid character found in DNA sequence")
 
 
-class CategoricalDataset(Dataset):
+class ProteinSequence(BiologicalSequence):
     def summary(self):
-        if not self.data:
-            print("No categorical data available.")
-            return
-        unique_values = set(self.data)
-        counts = {value: self.data.count(value) for value in unique_values}
-        print(f"Summary of the categorical dataset:")
-        print(f"Unique values: {unique_values}")
-        print(f"Counts: {counts}")
+        length = len(self.sequence)
+        unique_aas = set(self.sequence)
+        print(f"Protein sequence length: {length}")
+        print(f"Unique amino acids: {', '.join(unique_aas)}")
+
+    def validate(self):
+        allowed_aas = "ACDEFGHIKLMNPQRSTVWY"
+        if not all(aa in allowed_aas for aa in self.sequence):
+            raise ValueError("Invalid amino acid found in protein sequence")
 ~~~
 {: .language-python}
 
 Similarly to how `def` is used to define a function, the `class` keyword is used to define a new class. Both functions and variables can be created inside the class block, and these will be accessible on any objects (also known as instances) of the class that are created.
 
-When functions are defined within a class, they become *methods* of the class. Methods are functions that operate on the object itself. In order for the method to access and modify the object's data, it needs a way to refer to the specific instance it's working with.  This is done through the `self` parameter.
+When functions are defined within a class, they become *methods* of the class. Methods are functions that operate on the object itself. In order for the method to access and modify the object's data, it needs a way to refer to the specific instance it's working with. This is done through the `self` parameter.
 
-By convention, the first argument of a method is always named `self`. Python automatically passes the instance of the class (the object) as the first argument when you call a method on that object.  You don't need to pass it explicitly.
+By convention, the first argument of a method is always named `self`. Python automatically passes the instance of the class (the object) as the first argument when you call a method on that object. You don't need to pass it explicitly.
 
-To access variables (attributes) attached to the object, you prefix their names with `self.`.  For example, `self.data` refers to the `data` attribute of the current object.
+To access variables (attributes) attached to the object, you prefix their names with `self.`. For example, `self.sequence` refers to the `sequence` attribute of the current object.
 
-In the `Dataset` class:
+In the `BiologicalSequence` class:
 
-*   **`__init__(self, data)`**: This is the constructor method. It's automatically called when you create a new instance of the `Dataset` class.  It initializes the object's attributes, such as `self.data`, with the provided initial data. The double underscores indicate it is a special method (often called a "dunder" method).
+*   **`__init__(self, sequence)`**: This is the constructor method. It's automatically called when you create a new instance of the class. It initializes the object's attributes, such as `self.sequence`, with the provided sequence. The double underscores indicate it is a special method (often called a "dunder" method).
 
-*   **`get_data(self)`**: This method returns the data currently stored within the dataset object. It allows you to access the data from outside the class.
+*   **`get_sequence(self)`**: This method returns the sequence currently stored within the object.
 
-*   **`summary(self)`**: This method is designed to provide a summary of the dataset's contents.  In the base `Dataset` class, it raises a `NotImplementedError`, indicating that subclasses must override this method to provide a meaningful summary specific to their data type.  This enforces a design pattern where specialized classes *must* provide their own implementation.
+*   **`summary(self)`**: This method is designed to provide a summary of the sequence's contents. In the base class, it raises a `NotImplementedError`, indicating that subclasses must override this method to provide a meaningful summary specific to their sequence type.
 
 > ## Other names than `self`
 >
-> While it is possible to use any variable name for the first argument of a
-> method, and Python will not complain, other programmers will. Since one aim
-> when programming is to be as clear as possible to others who may read the
-> program later, we strongly recommend following the convention of calling
-> the first argument to methods `self`.
+> While it is possible to use any variable name for the first argument of a method, and Python will not complain, other programmers will. Since one aim when programming is to be as clear as possible to others who may read the program later, we strongly recommend following the convention of calling the first argument to methods `self`.
 {: .callout}
 
 > ## Naming classes
 >
-> Another convention in Python is that class names start with a capital letter,
-> and instead of underscores, initial letters of subsequent words are also
-> capitalised. This makes it easier to distinguish classes from objects and
-> other variables at a glance.
+> Another convention in Python is that class names start with a capital letter, and instead of underscores, initial letters of subsequent words are also capitalized. This makes it easier to distinguish classes from objects and other variables at a glance.
 {: .callout}
 
-So far this code hasn't visibly done anything; while we have defined a class,
-we have yet to use it. Let's do that now.
+So far this code hasn't visibly done anything; while we have defined a class, we have yet to use it. Let's do that now.
 
 ~~~
-numerical_data = [10, 20, 30, 40, 50]
-categorical_data = ['apple', 'banana', 'apple', 'orange']
-num_dataset = NumericalDataset(numerical_data)
-cat_dataset = CategoricalDataset(categorical_data)
-num_dataset.summary()
-cat_dataset.summary()
+dna_seq = DNASequence("ATGCGTAC")
+prot_seq = ProteinSequence("MKTLLL")
+
+dna_seq.summary()
+prot_seq.summary()
 ~~~
 {: .language-python}
 
 ## Customizing Object Initialization
 
-The class keyword is used to define a new class, and both functions and variables can be created inside the class block. These will be accessible on any objects of the class that are created. When functions are defined within a class, they become methods of instances of the class. In order for the function to be aware of the object they need to refer to, methods are always given the instance as their first argument. By convention, this argument is called self.
-To access variables attached to the object, their names must be prefixed by self..
-For example, if we wanted to plot quadratic functions with customizable styles, we could define a QuadraticPlotter class
+The class keyword is used to define a new class, and both functions and variables can be created inside the class block. These will be accessible on any objects of the class that are created. When functions are defined within a class, they become methods of instances of the class. In order for the function to be aware of the object they need to refer to, methods are always given the instance as their first argument. By convention, this argument is called self. To access variables attached to the object, their names must be prefixed by self.
+
+For example, a `Gene` class could represent genomic loci with customizable initialization and validation:
 
 ~~~
-from matplotlib.pyplot import subplots, show
-from numpy import linspace
+class Gene:
+    def __init__(self, name, sequence):
+        self.name = name
+        self.sequence = sequence.upper()
+        self.validate()
 
-class QuadraticPlotter:
-    def __init__(self, color='red', linewidth=1, x_min=-10, x_max=10):
-        self.color = color
-        self.linewidth = linewidth
-        self.x_min = x_min
-        self.x_max = x_max
-
-    def plot(self, a, b, c):
-        fig, ax = subplots()
-        x = linspace(self.x_min, self.x_max, 1000)
-        y = a * x**2 + b * x + c
-        ax.plot(x, y, color=self.color, linewidth=self.linewidth)
-        show()
+    def validate(self):
+        if not self.sequence:
+            raise ValueError("Gene sequence cannot be empty.")
+        allowed_bases = "ACGT"
+        if not all(base in allowed_bases for base in self.sequence):
+            raise ValueError("Invalid base in gene sequence.")
 ~~~
 {: .language-python}
 
-Using the QuadraticPlotter
+This class validates gene data right on object creation, preventing incorrect objects from existing.
+
+If we wanted to create a specialized `ProteinCodingGene` that inherits from `Gene` and adds specific annotations or methods, we would override `__init__` and call `super().__init__`:
 
 ~~~
-default_plotter = QuadraticPlotter()
-custom_plotter = QuadraticPlotter(color='blue', linewidth=3, x_min=-5, x_max=5)
+class ProteinCodingGene(Gene):
+    def __init__(self, name, sequence, protein_id):
+        super().__init__(name, sequence)
+        self.protein_id = protein_id
 
-default_plotter.plot(1, -3, 2)
-custom_plotter.plot(2, 4, -6)
-~~~
-{: .language-python}
-
-> ## `**`
->
-> The `**` syntax here tells Python to take the `thick_blue` `dict`, and
-> use its keys and values as keywords and keyword arguments. We'll
-> look at this operator later in the lesson where we talk about
-> decorators.
-{: .callout}
-
-Using objects on the other hand gives a neat alternative way of achieving
-this result:
-
-~~~
-blue_plotter = QuadraticPlotter()
-blue_plotter.color = "blue"
-blue_plotter.linewidth = 5
-
-plotter.plot(3, -5, 5)
-blue_plotter.plot(-3, 1, 0)
-plotter.plot(2, 10, 2)
-blue_plotter.plot(-2, 13, 4)
-
-show()
+    def translate(self):
+        # Example: simplistic translation stub
+        codon_map = {'ATG': 'M', 'TGG': 'W'}  # etc.
+        protein = ""
+        for i in range(0, len(self.sequence) - 2, 3):
+            codon = self.sequence[i:i+3]
+            protein += codon_map.get(codon, '?')
+        return protein
 ~~~
 {: .language-python}
 
-The two objects `plotter` and `blue_plotter` can store the different states
-needed to set up the two styles of plot, whilst keeping the plotting
-functionlity common, so it doesn't need to be written separately for red and
-blue versions. We no longer have to specify the colour every time we
-want to plot with a non-default colour&mdash;instead, we can use the
-`QuadraticPlotter` instance that has the colour we want set.
+Using classes on the other hand gives a neat way of achieving controlled initialization of bioinformatics objects, encapsulating domain logic, and preparing for extensibility.
 
-If we need to, we can check the values of the variables we defined:
-
-~~~
-print("Line width of red plotter is", plotter.linewidth)
-print("Line width of blue plotter is", blue_plotter.linewidth)
-~~~
-{: .language-python}
-
-~~~
-Line width of red plotter is 1
-Line width of blue plotter is 5
-~~~
-{: .output}
-
-> ## Mutation revisitied
->
-> Note that the classes we create ourselves in this way will produce mutable objects. This means that we can change the values in objects of `plotter.linewidth`, and Python allows us to do that. It doesn't throw an error.
-{: .callout}
-
-> ## Zoom in
->
-> Currently `QuadraticPlotter` is hardcoded to plot between -10 and 10.
-> Try adjusting it so that it can be adjusted in the same way as the `color`
-> and `linewidth` can, while keeping the current defaults.
->
-> Use the new class to plot the curve with `a = 3, b = 2, c = 1` both between
-> -10 and 10, and between -5 and 50. Do this without changing the
-> arguments to the `plot` method.
->
->> ## Solution
->>
->> ~~~
->> class QuadraticPlotter:
->>    color = "red"
->>    linewidth = 1
->>    x_min = -10
->>    x_max = 10
->>
->>    def plot(self, a, b, c):
->>        """Plot the line a * x ** 2 + b * x + c and output to the screen.
->>        x runs between -10 and 10, with 1000 intermediary points.
->>        The line is plotted in the colour specified by color, and with width
->>        linewidth."""
->>
->>        fig, ax = subplots()
->>        x = linspace(self.x_min, self.x_max, 1000)
->>        ax.plot(
->>            x,
->>            a * x ** 2 + b * x + c,
->>            color=self.color,
->>            linewidth=self.linewidth,
->>        )
->>
->> narrow_plot = QuadraticPlotter()
->> wide_plot = QuadraticPlotter()
->> wide_plot.x_min = -5
->> wide_plot.x_max = 50
->>
->> narrow_plot.plot(3, 2, 1)
->> wide_plot.plot(3, 2, 1)
->>
->> show()
->> ~~~
->> {: .language-python}
-> {: .solution}
-{: .challenge}
-
-
-> ## Plots of fits
->
-> The following function performs an [Orthogonal Distance Regression][odr]
-> fit of some data, and plots the resulting fit line along with the
-> data.
->
-> ~~~
-> from scipy.odr import ODR, Model, RealData
-> from matplotlib.pyplot import show
->
-> def linear(params, x):
->     return params[0] * x + params[1]
->
->
-> def odr_fit(f, x, y, xerr=None, yerr=None, p0=None, num_params=None):
->     if not p0 and not num_params:
->         raise ValueError("p0 or num_params must be specified")
->     if p0 and (num_params is not None):
->         assert len(p0) == num_params
->
->     data_to_fit = RealData(x, y, xerr, yerr)
->     model_to_fit_with = Model(f)
->     if not p0:
->         p0 = tuple(1 for _ in range(num_params))
->
->     odr_analysis = ODR(data_to_fit, model_to_fit_with, p0)
->     odr_analysis.set_job(fit_type=0)
->     return odr_analysis.run()
->
->
-> def plot_results(
->     f,
->     fitobj,
->     x,
->     y,
->     xmin=None,
->     xmax=None,
->     xerr=None,
->     yerr=None,
->     filename=None,
-> ):
->     fig, ax = subplots()
->     if xmin is None:
->         xmin = min(x)
->     if xmax is None:
->         xmax = max(x)
->
->     x_range = linspace(xmin, xmax, 1000)
->     ax.plot(x_range, f(fitobj.beta, x_range), label="Fit")
->     ax.errorbar(x, y, xerr=xerr, yerr=yerr, fmt=".", label="Data")
->     ax.set_xlabel(r"$x$")
->     ax.set_ylabel(r"$y$")
->     fig.suptitle(
->         f"Data: $A={fitobj.beta[0]:.02}"
->         f"\\pm{fitobj.cov_beta[0][0]**0.5:.02}, "
->         f"B={fitobj.beta[1]:.02}\\pm{fitobj.cov_beta[1][1]**0.5:.02}$"
->     )
->     ax.legend(loc=0, frameon=False)
->
->     if filename is not None:
->         fig.savefig(filename)
->
->
-> x_data = [0, 1, 2, 3, 4, 5]
-> y_data = [1, 3, 2, 4, 5, 5]
-> x_err = [0.2, 0.1, 0.3, 0.2, 0.5, 0.3]
-> y_err = [0.4, 0.4, 0.1, 0.2, 0.1, 0.4]
->
-> result = odr_fit(linear, x_data, y_data, x_err, y_err, num_params=2)
-> plot_results(linear, result, x_data, y_data, xerr=x_err, yerr=y_err)
-> show()
-> ~~~
-> {: .language-python}
->
-> This code has a lot of repeated terms, and would have even more if
-> we wanted to set custom formatting each time.
->
-> Try rewriting this as a class, turning most function arguments into
-> variables attached to the object, and functions into methods. Some
-> of these you won't be able to set in the class definition, but will
-> need to be set before the functions will work.
->
->> ## Solution
->>
->> ~~~
->> class FitterPlotter:
->>     x_data = None
->>     y_data = None
->>     x_err = None
->>     y_err = None
->>
->>     fit_result = None
->>     fit_form = None
->>     num_fit_params = None
->>
->>     xmin = None
->>     xmax = None
->>
->>     def odr_fit(self, p0=None):
->>         if None in (self.x_data, self.y_data, self.fit_form):
->>             raise ValueError("x_data, y_data, and fit_form must be specified")
->>         if not p0 and not self.num_fit_params:
->>             raise ValueError("p0 or num_fit_params must be specified")
->>         if p0 and (self.num_fit_params is not None):
->>             assert len(p0) == self.num_fit_params
->>
->>         data_to_fit = RealData(self.x_data, self.y_data, self.x_err, self.y_err)
->>         model_to_fit_with = Model(self.fit_form)
->>         if not p0:
->>             p0 = tuple(1 for _ in range(self.num_fit_params))
->>
->>         odr_analysis = ODR(data_to_fit, model_to_fit_with, p0)
->>         odr_analysis.set_job(fit_type=0)
->>         self.fit_result = odr_analysis.run()
->>         return self.fit_result
->>
->>     def plot_results(self, filename=None):
->>         if None in (self.x_data, self.y_data):
->>             raise ValueError("x_data and y_data must be specified")
->>         fig, ax = subplots()
->>         xmin, xmax = self.xmin, self.xmax
->>         if xmin is None:
->>             xmin = min(self.x_data)
->>         if xmax is None:
->>             xmax = max(self.x_data)
->>
->>         if self.fit_result is not None:
->>             x_range = linspace(xmin, xmax, 1000)
->>             ax.plot(
->>                 x_range,
->>                 self.fit_form(self.fit_result.beta, x_range),
->>                 label="Fit",
->>             )
->>             fig.suptitle(
->>                 f"Data: $A={self.fit_result.beta[0]:.02}"
->>                 f"\\pm{self.fit_result.cov_beta[0][0]**0.5:.02}, "
->>                 f"B={self.fit_result.beta[1]:.02}"
->>                 f"\\pm{self.fit_result.cov_beta[1][1]**0.5:.02}$"
->>             )
->>
->>         ax.errorbar(
->>             self.x_data,
->>             self.y_data,
->>             xerr=self.x_err,
->>             yerr=self.y_err,
->>             fmt=".",
->>             label="Data",
->>         )
->>         ax.set_xlabel(r"$x$")
->>         ax.set_ylabel(r"$y$")
->>         ax.legend(loc=0, frameon=False)
->>
->>         if filename is not None:
->>             fig.savefig(filename)
->>
->>
->> fitterplotter = FitterPlotter()
->> fitterplotter.x_data = [0, 1, 2, 3, 4, 5]
->> fitterplotter.y_data = [1, 3, 2, 4, 5, 5]
->> fitterplotter.x_err = [0.2, 0.1, 0.3, 0.2, 0.5, 0.3]
->> fitterplotter.y_err = [0.4, 0.4, 0.1, 0.2, 0.1, 0.4]
->> fitterplotter.fit_form = linear
->> fitterplotter.num_fit_params = 2
->>
->> fitterplotter.odr_fit()
->> fitterplotter.plot_results()
->> show()
->> ~~~
->> {: .language-python}
-> {: .solution}
-{: .challenge}
-
-
-## Initialising instances
-
-So far we can create an object with the defaults that we set in the class
-definition, and then customise it afterwards. But wouldn't it be nice to be
-able to create an object with the attributes that we want straight out of the
-box?
-
-To do this, we can define an _initialiser_ for the class. When Python creates
-an instance of a class, it looks for a method called `__init__`. If it finds
-one, then it calls it, giving it all the arguments passed to the class.
-
-For example, for the `QuadraticPlotter`, the variables `color` and `linewidth`
-could be passed as arguments to `__init__` and set on initialisation, rather
-than being defined as part of the class definition:
-
-~~~
-from matplotlib.colors import is_color_like
-
-class QuadraticPlotter:
-    def __init__(self, color='red', linewidth=1):
-        '''Set the initial attributes of this plotter.'''
-        assert is_color_like(color)
-
-        self.color = color
-        self.linewidth = linewidth
-
-    def plot(self, a, b, c):
-        '''Plot the line a * x ** 2 + b * x + c and output to the screen.
-        x runs between x_min and x_max, with 1000 intermediary points.
-        The line is plotted in the colour specified by color, and with width
-        linewidth.'''
-
-        fig, ax = subplots()
-        x = linspace(-10, 10, 1000)
-        ax.plot(
-            x,
-            a * x ** 2 + b * x + c,
-            color=self.color,
-            linewidth=self.linewidth,
-        )
-
-pink_plotter = QuadraticPlotter(color='magenta', linewidth=3)
-pink_plotter.plot(0, 1, 0)
-
-show()
-~~~
-{: .language-python}
-
-This also lets us do some validation that the values we are given are
-usable, rather than deferring these errors to a long way down the line.
-
-> ## Pronouncing `__init__`
->
-> The method name `__init__` is most often pronounced "dunder init",
-> where the "dunder" is short for "double underscore", since the name
-> starts and ends with two underscores.
->
-> We'll encounter more methods with "dunder" in the name in a later episode.
-{: .callout}
-
-> ## Zoom in again
->
-> Try rewriting the "Zoom in" example above to set the bounds of the plot,
-> as well as the `color` and `linewidth`, using arguments to the constructor.
->
->> ## Solution
->>
->> ~~~
->> class QuadraticPlotter:
->>     def __init__(self, color='red', linewidth=1, x_min=-10, x_max=10):
->>         '''Set the initial attributes of this plotter.'''
->>         assert is_color_like(color)
->>         self.color = color
->>         self.linewidth = linewidth
->>         self.x_min = x_min
->>         self.x_max = x_max
->>
->>     def plot(self, a, b, c):
->>         '''Plot the line a * x ** 2 + b * x + c and output to the screen.
->>         x runs between x_min and x_max, with 1000 intermediary points.
->>         The line is plotted in the colour specified by color, and with width
->>         linewidth.'''
->>
->>         fig, ax = subplots()
->>         x = linspace(self.x_min, self.x_max, 1000)
->>         ax.plot(
->>             x,
->>             a * x ** 2 + b * x + c,
->>             color=self.color,
->>             linewidth=self.linewidth,
->>         )
->>
->> narrow_plot = QuadraticPlotter()
->> wide_plot = QuadraticPlotter(x_min=-5, x_max=50)
->>
->> narrow_plot.plot(3, 2, 1)
->> wide_plot.plot(3, 2, 1)
->>
->> show()
->> ~~~
->> {: .language-python}
-> {: .solution}
-{: .challenge}
-
-> ## Initialising fitting
->
-> Adjust your solution to the _Plots of fits_ challenge above so that
-> it has an initialiser which checks that the needed parameters are
-> given before initialising the object.
->
->> ## Solution
->>
->> ~~~
->> class FitterPlotter:
->>     fit_result = None
->>
->>     def __init__(
->>         self,
->>         x_data,
->>         y_data,
->>         x_err=None,
->>         y_err=None,
->>         fit_form=None,
->>         num_fit_params=None,
->>         xmin=None,
->>         xmax=None,
->>     ):
->>         self.x_data = x_data
->>         self.y_data = y_data
->>         self.x_err = x_err
->>         self.y_err = y_err
->>         self.fit_form = fit_form
->>         self.num_fit_params = num_fit_params
->>         self.xmin = xmin
->>         self.xmax = xmax
->>
->>     def odr_fit(self, p0=None):
->>         if self.fit_form is None:
->>             raise ValueError("fit_form must be specified")
->>         if not p0 and not self.num_fit_params:
->>             raise ValueError("p0 or num_fit_params must be specified")
->>         if p0 and (self.num_fit_params is not None):
->>             assert len(p0) == self.num_fit_params
->>
->>         data_to_fit = RealData(self.x_data, self.y_data, self.x_err, self.y_err)
->>         model_to_fit_with = Model(self.fit_form)
->>         if not p0:
->>             p0 = tuple(1 for _ in range(self.num_fit_params))
->>
->>         odr_analysis = ODR(data_to_fit, model_to_fit_with, p0)
->>         odr_analysis.set_job(fit_type=0)
->>         self.fit_result = odr_analysis.run()
->>         return self.fit_result
->>
->>     def plot_results(self, filename=None):
->>         fig, ax = subplots()
->>         xmin, xmax = self.xmin, self.xmax
->>         if xmin is None:
->>             xmin = min(self.x_data)
->>         if xmax is None:
->>             xmax = max(self.x_data)
->>
->>         if self.fit_result is not None:
->>             x_range = linspace(xmin, xmax, 1000)
->>             ax.plot(
->>                 x_range,
->>                 self.fit_form(self.fit_result.beta, x_range),
->>                 label='Fit',
->>             )
->>             fig.suptitle(
->>                 f'Data: $A={self.fit_result.beta[0]:.02}'
->>                 f'\\pm{self.fit_result.cov_beta[0][0]**0.5:.02}, '
->>                 f'B={self.fit_result.beta[1]:.02}'
->>                 f'\\pm{self.fit_result.cov_beta[1][1]**0.5:.02}$'
->>             )
->>
->>         ax.errorbar(
->>             self.x_data,
->>             self.y_data,
->>             xerr=self.x_err,
->>             yerr=self.y_err,
->>             fmt='.',
->>             label='Data',
->>         )
->>         ax.set_xlabel(r'$x$')
->>         ax.set_ylabel(r'$y$')
->>         ax.legend(loc=0, frameon=False)
->>
->>         if filename is not None:
->>             fig.savefig(filename)
->>
->>
->> fitterplotter = FitterPlotter(
->>     x_data=[0, 1, 2, 3, 4, 5],
->>     y_data=[1, 3, 2, 4, 5, 5],
->>     x_err=[0.2, 0.1, 0.3, 0.2, 0.5, 0.3],
->>     y_err=[0.4, 0.4, 0.1, 0.2, 0.1, 0.4],
->>     fit_form=linear,
->>     num_fit_params=2,
->> )
->>
->> fitterplotter.odr_fit()
->> fitterplotter.plot_results()
->> show()
->> ~~~
->> {: .language-python}
-> {: .solution}
-{: .challenge}
-
+This structure sets the stage for more complex bioinformatics pipelines and data models, allowing clean, modular, and maintainable codebases.
 
 {% include links.md %}
 
-[odr]: https://docs.scipy.org/doc/scipy/reference/odr.html
+[1](https://academic.oup.com/bioinformatics/article/28/22/2996/239703)
+[2](https://biopython.org/wiki/The_Biopython_Structural_Bioinformatics_FAQ)
+[3](https://open.oregonstate.education/computationalbiology/chapter/objects-and-classes/)
+[4](https://omicstutorials.com/python-via-bioinformatics-examples-2/)
+[5](http://hplgit.github.io/bioinf-py/doc/pub/html/index.html)
+[6](https://microbenotes.com/python-bioinformatics-tools-applications/)
+[7](https://www.kaggle.com/code/shtrausslearning/biopython-bioinformatics-basics)
+[8](https://www.bioinformaticscrashcourse.com/7_DataAnalysisWithPython.html)
+[9](https://www.youtube.com/watch?v=uPHeqVb4Mo0)
