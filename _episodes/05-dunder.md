@@ -3,19 +3,18 @@ title: "Special methods in Bioinformatics"
 teaching: 25
 exercises: 15
 questions:
-
-* "How can classes allow their instances to work with standard Python operators in bioinformatics?"
-* "How can classes allow their instances to behave like iterables or collections of sequences?"
-* "How can classes allow their instances to be called like functions?"
+- "How can classes allow their instances to work with standard Python operators in bioinformatics?"
+- "How can classes allow their instances to behave like iterables or collections of sequences?"
+- "How can classes allow their instances to be called like functions?"
   objectives:
-* "Be able to implement methods like `__add__`, `__eq__`, and `__gt__` for bioinformatics objects."
-* "Be able to implement methods like `__len__`, `__iter__`, and `__reversed__` for collections of biological data."
-* "Be able to implement the `__call__` method for callable bioinformatics objects."
+- "Be able to implement methods like `__add__`, `__eq__`, and `__gt__` for bioinformatics objects."
+- "Be able to implement methods like `__len__`, `__iter__`, and `__reversed__` for collections of biological data."
+- "Be able to implement the `__call__` method for callable bioinformatics objects."
   keypoints:
-* "Implement methods like `__eq__`, `__add__`, and `__gt__` to allow operations such as arithmetic and comparisons on bioinformatics objects."
-* "Implement `__repr__` to get meaningful printouts for sequences and other objects."
-* "Implement methods like `__len__`, `__iter__`, and `__reversed__` to make classes behave like collections."
-* "Implement `__call__` to allow classes to be used as callable bioinformatics functions."
+- "Implement methods like `__eq__`, `__add__`, and `__gt__` to allow operations such as arithmetic and comparisons on bioinformatics objects."
+- "Implement `__repr__` to get meaningful printouts for sequences and other objects."
+- "Implement methods like `__len__`, `__iter__`, and `__reversed__` to make classes behave like collections."
+- "Implement `__call__` to allow classes to be used as callable bioinformatics functions."
 ---
 
 In bioinformatics, we often want to compare genes, sequences, or other biological entities. By default, Python only considers two objects equal if they are the exact same object in memory:
