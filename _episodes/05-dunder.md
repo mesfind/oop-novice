@@ -65,6 +65,7 @@ We can fix this by implementing `__eq__` and other special methods.
 > > gene2 = Gene("geneA", "ATGCGT")
 > > gene1 == gene2
 > > ~~~
+> > 
 > > {: .language-python}
 > {: .solution}
 > {: .challenge}
@@ -147,7 +148,6 @@ We can fix this by implementing `__eq__` and other special methods.
 > {: .solution}
 {: .challenge}
 
----
 
 > ## Challenge: Callable sequence plotter
 >
@@ -181,7 +181,6 @@ We can fix this by implementing `__eq__` and other special methods.
 > {: .solution}
 {: .challenge}
 
----
 
 > ## Challenge: Iterable genome
 >
