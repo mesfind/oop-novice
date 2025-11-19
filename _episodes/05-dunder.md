@@ -3,144 +3,294 @@ title: "Special methods in Bioinformatics"
 teaching: 25
 exercises: 15
 questions:
-- "How can bioinformatics classes allow their instances to work with standard Python operators?"
-- "How can bioinformatics classes allow their instances to behave like iterables or collections?"
-- "How can bioinformatics classes allow their instances to be called like functions?"
-objectives:
-- "Be able to implement methods like `__add__`, `__eq__`, and `__gt__` in bioinformatics context."
-- "Be able to implement methods like `__len__`, `__iter__`, and `__reversed__`."
-- "Be able to implement the `__call__` method."
-keypoints:
-- "Implement methods like `__eq__`, `__add__`, and `__gt__` to allow operations such as sequence comparisons and concatenations."
-- "Implement `__repr__` to get more meaningful printouts when you output bioinformatics objects."
-- "Implement methods like `__len__`, `__iter__`, and `__reversed__` to make bioinformatics objects behave like a collection or iterable."
-- "Implement the `__call__` method to make instances of a bioinformatics class callable like functions."
-***
 
-In bioinformatics, we may want to compare DNA sequence objects based on their biological properties. For example, two sequences with the exact same nucleotide content could be considered equal.
+* "How can classes allow their instances to work with standard Python operators for biological sequences or scores?"
+* "How can classes allow their instances to behave like iterables for sequence records or genomic features?"
+* "How can classes allow their instances to be called like functions in bioinformatics pipelines?"
+  objectives:
+* "Be able to implement methods like `__add__`, `__eq__`, and `__gt__` for bioinformatics data."
+* "Be able to implement methods like `__len__`, `__iter__`, and `__reversed__` for sequences or collections."
+* "Be able to implement the `__call__` method to make objects act as callable analysis tools."
+  keypoints:
+* "Implement methods like `__eq__`, `__add__`, and `__gt__` to allow comparison and combination of sequences, genes, or scores."
+* "Implement `__repr__` to display more meaningful representations of sequences or objects."
+* "Implement methods like `__len__`, `__iter__`, and `__reversed__` to make sequence objects behave like iterable collections."
+* "Implement the `__call__` method to make instances act as analysis functions or pipelines."
 
-Let's create a simple `DNASequence` class and implement the `__eq__` special method for equality comparison:
+---
 
-~~~python
+In previous lessons, we dealt with geometric objects like triangles. In bioinformatics, we often have sequences or gene objects that we want to compare, combine, or iterate over. Consider two sequences with the same nucleotides:
+
+```python
+seq1 = "ATGCGT"
+seq2 = "ATGCGT"
+if seq1 == seq2:
+    print("Python thinks these sequences are identical.")
+else:
+    print("Python thinks these sequences are different.")
+```
+
+{: .language-python}
+
+```
+Python thinks these sequences are identical.
+```
+
+{: .output}
+
+This works for simple strings, but for **sequence objects**, Python distinguishes objects unless we implement special methods. For example:
+
+```python
 class DNASequence:
-    def __init__(self, sequence):
-        self.sequence = sequence.upper()
+    def __init__(self, seq):
+        self.seq = seq.upper()
+```
+
+{: .language-python}
+
+Two DNASequence objects with the same sequence will not compare equal by default:
+
+```python
+a_seq = DNASequence("ATGCGT")
+b_seq = DNASequence("ATGCGT")
+print(a_seq == b_seq)
+```
+
+{: .language-python}
+
+```
+False
+```
+
+{: .output}
+
+Implementing the `__eq__` method allows Python to compare equality based on content rather than identity:
+
+```python
+class DNASequence:
+    def __init__(self, seq):
+        self.seq = seq.upper()
 
     def __eq__(self, other):
         if not isinstance(other, DNASequence):
             return False
-        return self.sequence == other.sequence
+        return self.seq == other.seq
 
     def __repr__(self):
-        return f"DNASequence('{self.sequence}')"
-        
-seq1 = DNASequence("ATGC")
-seq2 = DNASequence("ATGC")
-seq3 = DNASequence("GCTA")
+        return f"DNASequence({self.seq})"
 
-print(seq1 == seq2)  # True
-print(seq1 == seq3)  # False
-print(seq1)          # DNASequence('ATGC')
-~~~
+a_seq = DNASequence("ATGCGT")
+b_seq = DNASequence("ATGCGT")
+print(a_seq == b_seq)
+```
+
 {: .language-python}
 
-Output:
-
-~~~
+```
 True
-False
-DNASequence('ATGC')
-~~~
+```
 
-Great! This lets us compare sequence objects easily and also get friendly string representations.
+{: .output}
 
-***
+This pattern can be extended to compare genes by length, GC content, or other biological metrics using `__lt__`, `__gt__`, etc.
 
-We can also define relational operators to compare sequences according to custom biological metrics. For example, define ordering based on GC content:
+---
 
-~~~python
-class DNASequence:
-    def __init__(self, sequence):
-        self.sequence = sequence.upper()
+> ## Challenge: Compare sequences by GC content
+>
+> Implement a `Gene` class with `__eq__`, `__lt__`, and `__gt__` methods. Compare two genes first by GC content, then by length if GC content is equal.
+>
+> > ## Solution
+> >
+> > ```python
+> > class Gene:
+> >     def __init__(self, name, seq):
+> >         self.name = name
+> >         self.seq = seq.upper()
+> >
+> >     def gc_content(self):
+> >         gc = sum(1 for base in self.seq if base in "GC")
+> >         return gc / len(self.seq)
+> >
+> >     def __eq__(self, other):
+> >         return self.seq == other.seq
+> >
+> >     def __lt__(self, other):
+> >         if self.gc_content() != other.gc_content():
+> >             return self.gc_content() < other.gc_content()
+> >         return len(self.seq) < len(other.seq)
+> >
+> >     def __repr__(self):
+> >         return f"Gene({self.name}, {self.seq})"
+> > ```
+> >
+> > {: .language-python}
+> > {: .solution}
 
-    def gc_content(self):
-        return (self.sequence.count('G') + self.sequence.count('C')) / len(self.sequence)
+---
 
-    def __lt__(self, other):
-        if not isinstance(other, DNASequence):
-            return NotImplemented
-        return self.gc_content() < other.gc_content()
+### Arithmetic with bioinformatics objects
+
+Special methods like `__add__` can combine sequences or aggregate scores. For example, a `QualityScore` class representing Phred scores:
+
+```python
+class QualityScore:
+    def __init__(self, scores):
+        self.scores = scores
+
+    def __add__(self, other):
+        combined = [a+b for a, b in zip(self.scores, other.scores)]
+        return QualityScore(combined)
 
     def __repr__(self):
-        return f"DNASequence('{self.sequence}')"
+        return f"QualityScore({self.scores})"
 
-seqA = DNASequence("ATGC")
-seqB = DNASequence("GCGC")
+qs1 = QualityScore([30, 32, 28])
+qs2 = QualityScore([31, 29, 30])
+qs_total = qs1 + qs2
+print(qs_total)
+```
 
-print(seqA < seqB)  # True, because seqB has higher GC content
-~~~
 {: .language-python}
 
-***
+```
+QualityScore([61, 61, 58])
+```
 
-We might want to combine sequences with the `+` operator by concatenation:
+{: .output}
 
-~~~python
-class DNASequence:
-    ...
-    def __add__(self, other):
-        if not isinstance(other, DNASequence):
-            return NotImplemented
-        return DNASequence(self.sequence + other.sequence)
+---
 
-seq1 = DNASequence("ATG")
-seq2 = DNASequence("CGA")
-combined = seq1 + seq2
-print(combined)  # DNASequence('ATGCGA')
-~~~
+### Callable objects
+
+Bioinformatics pipelines often benefit from callable objects for modular analysis. For example:
+
+```python
+class SequenceAnalyzer:
+    def __init__(self, motif="ATG"):
+        self.motif = motif
+
+    def analyze(self, sequence):
+        return sequence.count(self.motif)
+
+    def __call__(self, sequence):
+        return self.analyze(sequence)
+
+analyzer = SequenceAnalyzer()
+print(analyzer("ATGCGTATG"))
+```
+
 {: .language-python}
 
-***
+```
+2
+```
 
-To behave like a collection, we can implement methods like `__len__`, `__iter__`, and `__reversed__`:
+{: .output}
 
-~~~python
+> ## Challenge: Extend analyzer
+>
+> Make a callable `MotifCounter` that counts multiple motifs in a sequence and returns a dictionary with counts.
+>
+> > ## Solution
+> >
+> > ```python
+> > class MotifCounter:
+> >     def __init__(self, motifs):
+> >         self.motifs = motifs
+> >
+> >     def __call__(self, sequence):
+> >         return {motif: sequence.count(motif) for motif in self.motifs}
+> >
+> > mc = MotifCounter(["ATG", "CGT"])
+> > print(mc("ATGCGTATG"))
+> > ```
+> >
+> > {: .language-python}
+> >
+> > ```
+> > {'ATG': 2, 'CGT': 1}
+> > ```
+> >
+> > {: .output}
+> > {: .solution}
+
+---
+
+### Collections and iterables
+
+Sequence objects can behave like collections:
+
+```python
 class DNASequence:
-    ...
+    def __init__(self, seq):
+        self.seq = seq
+
     def __len__(self):
-        return len(self.sequence)
+        return len(self.seq)
 
     def __iter__(self):
-        return iter(self.sequence)
+        return iter(self.seq)
 
     def __reversed__(self):
-        return reversed(self.sequence)
+        return reversed(self.seq)
 
-seq = DNASequence("ATGC")
-print(len(seq))  # 4
-
+seq = DNASequence("ATGCGT")
+print(len(seq))
 for base in seq:
     print(base)
-    
-print(''.join(reversed(seq)))  # CGTA
-~~~
+for base in reversed(seq):
+    print(base)
+```
+
 {: .language-python}
 
-***
+```
+6
+A
+T
+G
+C
+G
+T
+T
+G
+C
+G
+T
+A
+```
 
-Finally, by implementing `__call__`, we can make DNA sequence objects behave like functions. For example, to transcribe DNA to RNA:
+{: .output}
 
-~~~python
-class DNASequence:
-    ...
-    def __call__(self):
-        return self.sequence.replace('T', 'U')
+> ## Challenge: Implement `__getitem__` for DNASequence
+>
+> Access individual nucleotides using indexing; slices should raise `IndexError`.
+>
+> > ## Solution
+> >
+> > ```python
+> > class DNASequence:
+> >     def __init__(self, seq):
+> >         self.seq = seq
+> >
+> >     def __getitem__(self, key):
+> >         if isinstance(key, int):
+> >             return self.seq[key]
+> >         else:
+> >             raise IndexError("Slicing not supported")
+> >
+> > dna = DNASequence("ATGCGT")
+> > print(dna[2])
+> > ```
+> >
+> > {: .language-python}
+> >
+> > ```
+> > G
+> > ```
+> >
+> > {: .output}
+> > {: .solution}
 
-dna = DNASequence("ATGC")
-print(dna())  # AUGC
-~~~
-{: .language-python}
 
-***
-
-> ## Challenge: Implement a `ProteinSequence` class with similar special methods considering amino acid properties.
