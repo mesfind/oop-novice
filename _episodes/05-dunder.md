@@ -3,7 +3,6 @@ title: "Special methods in Bioinformatics"
 teaching: 25
 exercises: 15
 questions:
-
 * "How can classes allow their instances to work with standard Python operators for biological sequences or scores?"
 * "How can classes allow their instances to behave like iterables for sequence records or genomic features?"
 * "How can classes allow their instances to be called like functions in bioinformatics pipelines?"
@@ -16,10 +15,9 @@ questions:
 * "Implement `__repr__` to display more meaningful representations of sequences or objects."
 * "Implement methods like `__len__`, `__iter__`, and `__reversed__` to make sequence objects behave like iterable collections."
 * "Implement the `__call__` method to make instances act as analysis functions or pipelines."
-
 ---
 
-In previous lessons, we dealt with geometric objects like triangles. In bioinformatics, we often have sequences or gene objects that we want to compare, combine, or iterate over. Consider two sequences with the same nucleotides:
+In bioinformatics, we often have sequences or gene objects that we want to compare, combine, or iterate over. Consider two sequences with the same nucleotides:
 
 ```python
 seq1 = "ATGCGT"
