@@ -6,11 +6,11 @@ questions:
 * "How can classes allow their instances to work with standard Python operators for biological sequences or scores?"
 * "How can classes allow their instances to behave like iterables for sequence records or genomic features?"
 * "How can classes allow their instances to be called like functions in bioinformatics pipelines?"
-  objectives:
+objectives:
 * "Be able to implement methods like `__add__`, `__eq__`, and `__gt__` for bioinformatics data."
 * "Be able to implement methods like `__len__`, `__iter__`, and `__reversed__` for sequences or collections."
 * "Be able to implement the `__call__` method to make objects act as callable analysis tools."
-  keypoints:
+keypoints:
 * "Implement methods like `__eq__`, `__add__`, and `__gt__` to allow comparison and combination of sequences, genes, or scores."
 * "Implement `__repr__` to display more meaningful representations of sequences or objects."
 * "Implement methods like `__len__`, `__iter__`, and `__reversed__` to make sequence objects behave like iterable collections."
