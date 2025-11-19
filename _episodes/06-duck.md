@@ -14,7 +14,7 @@ keypoints:
 - "Provided a bioinformatics class exposes all required functionality for an operation to work, Python allows it."
 - "Only use inheritance to express relationships where the subclass is the same kind of thing as the superclass."
 - "Implementing interfaces and adding functionality with composition can be better alternatives to inheritance in some cases."
-***
+---
 
 There is a principle that if something "looks like a duck, and swims like a duck, and quacks like a duck, then it is probably a duck".
 
