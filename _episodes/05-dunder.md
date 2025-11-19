@@ -6,7 +6,7 @@ questions:
 - "How can classes allow their instances to work with standard Python operators in bioinformatics?"
 - "How can classes allow their instances to behave like iterables or collections of sequences?"
 - "How can classes allow their instances to be called like functions?"
-  objectives:
+objectives:
 - "Be able to implement methods like `__add__`, `__eq__`, and `__gt__` for bioinformatics objects."
 - "Be able to implement methods like `__len__`, `__iter__`, and `__reversed__` for collections of biological data."
 - "Be able to implement the `__call__` method for callable bioinformatics objects."
