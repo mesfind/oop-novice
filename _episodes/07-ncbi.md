@@ -22,7 +22,7 @@ keypoints:
 - "`efetch` retrieve complete records"
 - "`esummary`"" get summary information efficiently"
 - "Search History work with large result sets"
-- Multiple Databases Access Gene, Protein, Taxonomy, and more"
+- "Multiple Databases Access Gene, Protein, Taxonomy, and more"
 
 ---
 
