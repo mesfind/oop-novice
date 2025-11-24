@@ -18,10 +18,6 @@ keypoints:
 - "Use `esearch` to find records, `efetch` to retrieve them, and `esummary` to get summaries"
 - "Parse complex data using Biopython's parsers like `Medline` and `SeqIO`"
 - "Be respectful of NCBI's servers by implementing delays between requests"
-- "`esearch` find records in any NCBI database"
-- "`efetch` retrieve complete records"
-- "`esummary`"" get summary information efficiently"
-- "Search History work with large result sets"
 - "Multiple Databases Access Gene, Protein, Taxonomy, and more"
 ---
 
