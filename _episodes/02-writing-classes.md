@@ -15,12 +15,11 @@ keypoints:
 - "Method definitions look like functions, but must take a `self` argument"
 - "The `__init__` method is called when instances are constructed"
 - "Bioinformatics classes often include validation and domain-specific logic in `__init__`"
-- **Encapsulate biological data** with built-in validation
-- **Create specialized behaviors** through methods tailored to biological operations
-- **Ensure data integrity** by validating inputs during object creation
-- **Build hierarchical relationships** through inheritance that mirror biological relationships
-- **Create reusable, maintainable code** for complex bioinformatics analyses
-
+- "**Encapsulate biological data** with built-in validation"
+- "**Create specialized behaviors** through methods tailored to biological operations"
+- "**Ensure data integrity** by validating inputs during object creation"
+- "**Build hierarchical relationships** through inheritance that mirror biological relationships"
+- "**Create reusable, maintainable code** for complex bioinformatics analyses"
 ---
 
 ## Introduction to Writing Bioinformatics Classes
