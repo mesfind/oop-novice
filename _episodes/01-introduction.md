@@ -175,6 +175,8 @@ class 'Bio.Seq.Seqeq'>
 >> seqs = [Seq(s) for s in ["ATG", "CCC", "TTA"]]
 >> print(seqs)
 >> ~~~
+>>  {: .language-python}
+>> 
 > {: .solution}
 {: .challenge}
 
