@@ -9,12 +9,12 @@ objectives:
 - "Use inheritance to organise biological sequence classes"
 - "Override and extend parent methods using super"
 keypoints:
-- Subclass syntax: Use `ChildClass(ParentClass)` to create inheritance
-- Inheritance: Child classes automatically get all methods and attributes from parents
-- Method overriding: A method with the same name in the child class replaces the parent implementation
-- super(): Use `super()` to call parent class methods and extend their functionality
-- Mixins: Special classes that provide additional functionality to be mixed into other classes
-- Composition: Sometimes "has-a" relationships are better than "is-a" relationships for code organization
+- __Subclass syntax__ uses `ChildClass(ParentClass)` to create inheritance
+- __Inheritance__ help a child classes automatically get all methods and attributes from parents
+- __Method overriding__ is  a method with the same name in the child class replaces the parent implementation
+- Use `super()` to call parent class methods and extend their functionality
+- Mixins are special classes that provide additional functionality to be mixed into other classes
+- Composition sometimes "has-a" relationships are better than "is-a" relationships for code organization
 ---
 
 ## What is Inheritance?
