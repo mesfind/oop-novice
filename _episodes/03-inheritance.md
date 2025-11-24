@@ -9,17 +9,12 @@ objectives:
 - "Use inheritance to organise biological sequence classes"
 - "Override and extend parent methods using super"
 keypoints:
-- "Subclass syntax uses ParentClass inside parentheses"
-- "Child classes inherit attributes and methods from the parent"
-- "A method with the same name replaces the parent implementation"
-- "super allows controlled reuse of parent logic"
-keypoints:
-- **Subclass syntax**: Use `ChildClass(ParentClass)` to create inheritance
-- **Inheritance**: Child classes automatically get all methods and attributes from parents
-- **Method overriding**: A method with the same name in the child class replaces the parent implementation
-- **super()**: Use `super()` to call parent class methods and extend their functionality
-- **Mixins**: Special classes that provide additional functionality to be mixed into other classes
-- **Composition**: Sometimes "has-a" relationships are better than "is-a" relationships for code organization
+- Subclass syntax: Use `ChildClass(ParentClass)` to create inheritance
+- Inheritance: Child classes automatically get all methods and attributes from parents
+- Method overriding: A method with the same name in the child class replaces the parent implementation
+- super(): Use `super()` to call parent class methods and extend their functionality
+- Mixins: Special classes that provide additional functionality to be mixed into other classes
+- Composition: Sometimes "has-a" relationships are better than "is-a" relationships for code organization
 ---
 
 ## What is Inheritance?
