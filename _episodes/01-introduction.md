@@ -205,7 +205,7 @@ Bioinformatics libraries often use inheritance to extend functionality. For exam
 from Bio.Seq import MutableSeq
 mutable_seq = MutableSeq("ATGC")
 print(mutable_seq)
-mutable_seq = "G"
+mutable_seq[0] = "G"
 print(mutable_seq)
 ~~~
 {: .language-python}
