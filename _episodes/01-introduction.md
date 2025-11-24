@@ -19,68 +19,59 @@ keypoints:
 - "Classes can inherit from other classes; objects of the subclass are automatically also of the parent class"
 ---
 
-You may recall that in bioinformatics we often use the `Seq` object from the Biopython library to represent sequences. For example, to create a DNA sequence object:
+## What are Objects in Python?
 
-~~~
+In Python, **everything is an object**. This means that any piece of data you work with - whether it's a number, string, list, or a complex biological sequence - is an **object** that belongs to a specific **class** (also called a **type**).
+
+Think of a class as a blueprint and objects as the actual buildings constructed from that blueprint. The blueprint defines what the building can do, and each building is a specific instance.
+
+## Objects in Bioinformatics: Seq vs String
+
+In bioinformatics, we often use specialized objects like the `Seq` object from Biopython instead of plain Python strings. Let's see why:
+
+```python
 from Bio.Seq import Seq
+
+# Create a DNA sequence as a Seq object
 dna_seq = Seq("ATGCGA")
-print(dna_seq)
-~~~
-{: .language-python}
+print(f"Seq object: {dna_seq}")
 
-~~~
-ATGCGA
-~~~
-{: .output}
-
-This `dna_seq` is an object of the class `Seq`, which provides convenient sequence methods.
-
-Let's compare this with standard Python types. For example, a DNA sequence stored as a string:
-
-~~~
+# Create the same sequence as a plain string
 dna_string = "ATGCGA"
-print(dna_string)
-~~~
-{: .language-python}
+print(f"String: {dna_string}")
+```
 
-~~~
-ATGCGA
-~~~
-{: .output}
+Both print the same sequence, but they have different capabilities:
 
-While similar, `dna_string` is a plain string and does not have bioinformatics-specific methods.
+```python
+# Seq objects have bioinformatics-specific methods
+print(f"Reverse complement: {dna_seq.reverse_complement()}")
 
-Let's see if we can call a sequence method on these:
+# This will cause an error - strings don't have bioinformatics methods
+# print(dna_string.reverse_complement())  # Uncomment to see the error
+```
 
-~~~
-print(dna_seq.reverse_complement())
-print(dna_string.reverse_complement())  # This will error
-~~~
-{: .language-python}
+The `Seq` object understands biological operations like reverse complement, while a plain string does not.
 
-Python will signal an error for the plain string, but not for `Seq` because it knows how to do this method.
+## Understanding Types and Classes
 
-## What type is it?
+Every object in Python has a type (class) that defines what it can do. Let's examine the types of our sequences:
 
-Let's investigate what types these are:
+```python
+print(f"Type of dna_seq: {type(dna_seq)}")
+print(f"Type of dna_string: {type(dna_string)}")
+```
 
-~~~
-type(dna_seq)
-type(dna_string)
-~~~
-{: .language-python}
+```
+<class 'Bio.Seq.Seq'>
+<class 'str'>
+```
 
-~~~
-lass 'Bio.Seq.Seqeq'>
-lass 'strtr'>
-~~~
-{: .output}
-
-So, `dna_seq` is an object of the type `Bio.Seq.Seq`, which is a class designed for biological sequences. The standard string is of type `str`.
+This shows that `dna_seq` is an instance of the `Bio.Seq.Seq` class (designed for biological sequences), while `dna_string` is an instance of the built-in `str` class.
 
 > ## Class or Type?
 >
-> In Python, _class_ and _type_ can be used interchangeably. Classes provide the blueprint for their objects.
+> In Python, the terms **class** and **type** are used interchangeably. Both refer to the blueprint that defines what an object can do and what data it can store.
 {: .callout}
 
 > ## Let's find some types
@@ -89,80 +80,117 @@ So, `dna_seq` is an object of the type `Bio.Seq.Seq`, which is a class designed 
 >
 >> ## Solution
 >>
->> ~~~
+>> ```python
 >> from Bio.SeqRecord import SeqRecord
 >> from Bio.Seq import Seq
+>> from Bio.Align import MultipleSeqAlignment
 >>
+>> # Create a SeqRecord and check its type
 >> record = SeqRecord(Seq("ATGC"))
->> print(type(record))
->> ~~~
+>> print(f"SeqRecord type: {type(record)}")
 >>
->> ~~~
->> lass 'Bioio.SeqRecord.SeqRecord'>
->> ~~~
+>> # Create an alignment and check its type  
+>> alignment = MultipleSeqAlignment([record])
+>> print(f"Alignment type: {type(alignment)}")
+>> ```
+>> {: .language-python}
+>>
+>> ```
+>> SeqRecord type: <class 'Bio.SeqRecord.SeqRecord'>
+>> Alignment type: <class 'Bio.Align.MultipleSeqAlignment'>
+>> ```
+>> {: .output}
 > {: .solution}
 {: .challenge}
 
-## Changing things
+## Mutable vs Immutable Objects
 
-In Python, objects can be _immutable_ or _mutable_. 
+In bioinformatics, it's important to understand whether objects can be changed after creation:
 
-Sequence objects from Biopython like `Seq` are immutable — you cannot change them after creation, which is important for consistency.
+- **Immutable objects** cannot be modified after creation
+- **Mutable objects** can be modified after creation
 
-Conversely, a list of sequences (e.g. a list of `Seq` objects) is mutable — you can add or modify individual sequences.
+```python
+# Seq objects are immutable - they cannot be changed
+from Bio.Seq import Seq
+dna_seq = Seq("ATGC")
+print(f"Original: {dna_seq}")
 
-Try this example:
+# This would cause an error because Seq is immutable:
+# dna_seq[0] = "G"  # Uncomment to see the error
 
-~~~
+# Lists are mutable - they can be changed
 sequences = [Seq("ATGC"), Seq("CGTA")]
-sequences = Seq("TTTT")
-print(sequences)
-~~~
-{: .language-python}
+print(f"Original list: {sequences}")
+
+# We can modify the list
+sequences.append(Seq("TTTT"))
+print(f"Modified list: {sequences}")
+```
+
+Immutable objects like `Seq` are safer for bioinformatics because they prevent accidental changes to important biological data.
 
 ## Instances and Methods
 
-An object of a particular class is called an _instance_. For example, `dna_seq` is an instance of class `Seq`. We can check this using `isinstance`:
+When we create an object from a class, we say we create an **instance** of that class. Each instance has access to **methods** (functions) defined by its class.
 
-~~~
+```python
 from Bio.Seq import Seq
+
+# Create an instance of the Seq class
 dna_seq = Seq("AGCT")
-print(isinstance(dna_seq, Seq))
-~~~
-{: .language-python}
+print(f"Is dna_seq a Seq instance? {isinstance(dna_seq, Seq)}")
 
-~~~
-True
-~~~
-{: .output}
-
-Objects have methods which provide functionality. For example, the `Seq` class provides the `complement()` method:
-
-~~~
-print(dna_seq.complement())
-~~~
-{: .language-python}
+# Use methods provided by the Seq class
+print(f"Sequence: {dna_seq}")
+print(f"Complement: {dna_seq.complement()}")
+print(f"Transcribe to RNA: {dna_seq.transcribe()}")
+```
 
 > ## Finding out what things are
 >
-> Use `type()` and `isinstance()` to check the types of your biological data objects.
+> Practice using `type()` and `isinstance()` to check the types of your biological data objects.
+>
+>> ## Solution
+>>
+>> ```python
+>> from Bio.Seq import Seq
+>> from Bio.SeqRecord import SeqRecord
+>>
+>> # Create some bioinformatics objects
+>> my_seq = Seq("ATGCCC")
+>> my_record = SeqRecord(my_seq)
+>> my_list = [my_seq, my_record]
+>>
+>> # Check their types
+>> print(f"my_seq is type: {type(my_seq)}")
+>> print(f"my_record is type: {type(my_record)}")
+>> print(f"my_list is type: {type(my_list)}")
+>>
+>> # Check if they are instances of specific classes
+>> print(f"my_seq is a Seq: {isinstance(my_seq, Seq)}")
+>> print(f"my_record is a SeqRecord: {isinstance(my_record, SeqRecord)}")
+>> print(f"my_list is a list: {isinstance(my_list, list)}")
+>> ```
+>> {: .language-python}
+> {: .solution}
 {: .challenge}
 
-## Making objects
+## Creating Objects (Instantiation)
 
-Objects are made by calling their class name like a function. For example:
+Objects are created by **calling the class name as a function**. This process is called **instantiation**.
 
-~~~
+```python
 from Bio.Seq import Seq
-new_seq = Seq("GATTACA")
-print(type(new_seq))
-~~~
-{: .language-python}
 
-~~~
-class 'Bio.Seq.Seqeq'>
-~~~
-{: .output}
+# Create a new Seq object by calling the Seq class
+new_seq = Seq("GATTACA")
+print(f"Sequence: {new_seq}")
+print(f"Type: {type(new_seq)}")
+
+# The parentheses after Seq contain arguments for the constructor
+# Different classes need different arguments
+```
 
 > ## Make a list of Seq objects
 >
@@ -170,56 +198,174 @@ class 'Bio.Seq.Seqeq'>
 >
 >> ## Solution
 >>
->> ~~~
+>> ```python
 >> from Bio.Seq import Seq
+>> 
+>> # Create a list of Seq objects using a list comprehension
 >> seqs = [Seq(s) for s in ["ATG", "CCC", "TTA"]]
 >> print(seqs)
->> ~~~
->>  {: .language-python}
 >> 
+>> # Check that each item is indeed a Seq object
+>> for i, seq_obj in enumerate(seqs):
+>>     print(f"Item {i}: {seq_obj} (type: {type(seq_obj)})")
+>> ```
+>> {: .language-python}
+>> 
+>> ```
+>> [Seq('ATG'), Seq('CCC'), Seq('TTA')]
+>> Item 0: ATG (type: <class 'Bio.Seq.Seq'>)
+>> Item 1: CCC (type: <class 'Bio.Seq.Seq'>)
+>> Item 2: TTA (type: <class 'Bio.Seq.Seq'>)
+>> ```
+>> {: .output}
 > {: .solution}
 {: .challenge}
 
-## Equality and identity
+## Object Identity vs Equality
 
-In bioinformatics, it's important to distinguish when two sequences are the same sequence (equality) versus the same object in memory (identity). 
+In bioinformatics, it's crucial to understand the difference between:
+- **Equality** (`==`): Do two objects contain the same data?
+- **Identity** (`is`): Are two objects the same object in memory?
 
-Example:
+```python
+from Bio.Seq import Seq
 
-~~~
+# Create three sequence objects
 seq1 = Seq("ATG")
-seq2 = Seq("ATG")
-seq3 = seq1
+seq2 = Seq("ATG")  # Same content, different object
+seq3 = seq1        # Same object
 
-print(seq1 == seq2)  # True, sequences have equal content
-print(seq1 is seq2)  # False, different objects
-print(seq1 is seq3)  # True, same object
-~~~
-{: .language-python}
+print("=== Equality Check (==) ===")
+print(f"seq1 == seq2: {seq1 == seq2}")  # True - same sequence content
+print(f"seq1 == seq3: {seq1 == seq3}")  # True - same sequence content
 
-## Inheritance
+print("\n=== Identity Check (is) ===")
+print(f"seq1 is seq2: {seq1 is seq2}")  # False - different objects
+print(f"seq1 is seq3: {seq1 is seq3}")  # True - same object
 
-Bioinformatics libraries often use inheritance to extend functionality. For example, the `MutableSeq` class inherits from `Seq` and allows mutation:
+print("\n=== Memory Addresses ===")
+print(f"seq1 id: {id(seq1)}")
+print(f"seq2 id: {id(seq2)}")
+print(f"seq3 id: {id(seq3)}")
+```
 
-~~~
-from Bio.Seq import MutableSeq
+This distinction is important when working with large biological datasets to avoid unnecessary memory usage.
+
+## Inheritance in Bioinformatics
+
+**Inheritance** allows new classes to be based on existing classes, inheriting their properties and methods while adding new functionality.
+
+```python
+from Bio.Seq import Seq, MutableSeq
+
+# MutableSeq inherits from Seq but allows modification
 mutable_seq = MutableSeq("ATGC")
-print(mutable_seq)
+print(f"Original: {mutable_seq}")
+
+# MutableSeq can be changed (unlike Seq)
 mutable_seq[0] = "G"
-print(mutable_seq)
-~~~
-{: .language-python}
+print(f"Modified: {mutable_seq}")
 
-~~~
-ATGC
-GTGC
-~~~
-{: .output}
+# Check inheritance relationship
+print(f"MutableSeq is a subclass of Seq: {issubclass(MutableSeq, Seq)}")
+print(f"mutable_seq is a Seq: {isinstance(mutable_seq, Seq)}")
+print(f"mutable_seq is a MutableSeq: {isinstance(mutable_seq, MutableSeq)}")
+```
 
-Here `MutableSeq` is a subclass of `Seq`. Objects of `MutableSeq` have all methods of `Seq` plus mutation capabilities.
+Inheritance is widely used in bioinformatics libraries:
+- Custom exceptions inherit from built-in exceptions
+- Specialized sequence types inherit from basic sequence classes
+- Database record classes inherit from base record classes
 
-Inheritance is also used to build exception hierarchies for bioinformatics errors, e.g., a custom `SequenceError` inheriting from `ValueError`.
+## Practical Example: Custom Sequence Class
 
-Understanding classes and objects, their identity and equality, and the use of inheritance is essential for managing biological data programmatically.
+Let's create a simple custom sequence class to understand these concepts better:
+
+```python
+class DNASequence:
+    """A simple DNA sequence class"""
+    
+    def __init__(self, sequence):
+        # Constructor - called when creating new instances
+        self.sequence = sequence.upper()
+        self._validate()
+    
+    def _validate(self):
+        """Validate that sequence contains only DNA bases"""
+        valid_bases = set('ACGT')
+        if not all(base in valid_bases for base in self.sequence):
+            raise ValueError("Sequence contains invalid DNA characters")
+    
+    def gc_content(self):
+        """Calculate GC content"""
+        gc_count = self.sequence.count('G') + self.sequence.count('C')
+        return gc_count / len(self.sequence)
+    
+    def __str__(self):
+        """String representation"""
+        return self.sequence
+    
+    def __len__(self):
+        """Length of the sequence"""
+        return len(self.sequence)
+
+# Create instances of our custom class
+dna1 = DNASequence("ATGCGTA")
+dna2 = DNASequence("atgcgta")  # Will be converted to uppercase
+
+print(f"DNA 1: {dna1}")
+print(f"DNA 2: {dna2}")
+print(f"GC content: {dna1.gc_content():.2f}")
+print(f"Length: {len(dna1)}")
+print(f"Type: {type(dna1)}")
+
+# This will raise an error due to invalid characters:
+# bad_dna = DNASequence("ATGCX")
+```
+
+> ## Create a Protein Sequence Class
+>
+> Create a simple `ProteinSequence` class that:
+> - Validates the sequence contains only valid amino acid codes (ACDEFGHIKLMNPQRSTVWY*)
+> - Has a method to calculate molecular weight (you can use a simple approximation)
+> - Has a string representation method
+>
+>> ## Solution
+>>
+>> ```python
+>> class ProteinSequence:
+>>     """A simple protein sequence class"""
+>>     
+>>     def __init__(self, sequence):
+>>         self.sequence = sequence.upper()
+>>         self._validate()
+>>     
+>>     def _validate(self):
+>>         """Validate that sequence contains only valid amino acids"""
+>>         valid_aa = set('ACDEFGHIKLMNPQRSTVWY*')
+>>         if not all(aa in valid_aa for aa in self.sequence):
+>>             raise ValueError("Sequence contains invalid amino acid codes")
+>>     
+>>     def approximate_weight(self):
+>>         """Approximate molecular weight in Daltons"""
+>>         # Simple approximation: average amino acid weight ~110 Da
+>>         return len(self.sequence) * 110
+>>     
+>>     def __str__(self):
+>>         return self.sequence
+>>     
+>>     def __len__(self):
+>>         return len(self.sequence)
+>>
+>> # Test the class
+>> protein = ProteinSequence("ACDEFGHIK")
+>> print(f"Protein: {protein}")
+>> print(f"Length: {len(protein)}")
+>> print(f"Approx weight: {protein.approximate_weight()} Da")
+>> ```
+>> {: .language-python}
+> {: .solution}
+{: .challenge}
+
 
 {% include links.md %}
