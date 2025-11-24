@@ -15,12 +15,11 @@ keypoints:
 - "Implement `__repr__` to get meaningful printouts for sequences and other objects."
 - "Implement methods like `__len__`, `__iter__`, and `__reversed__` to make classes behave like collections."
 - "Implement `__call__` to allow classes to be used as callable bioinformatics functions."
-- **Comparison methods** (`__eq__`, `__lt__`, etc.) allow meaningful comparisons of biological objects
-- "**Arithmetic methods** (`__add__`, `__mul__`, etc.) enable natural operations on sequences and measurements"
-- "**Collection methods** (`__len__`, `__getitem__`, `__iter__`) make objects behave like built-in containers"
-- "**The `__call__` method** turns instances into callable functions, perfect for configurable analysis tools"
-- "**String representation** (`__repr__`, `__str__`) provides meaningful output for debugging and display"
-
+- "Comparison methods (`__eq__`, `__lt__`, etc.) allow meaningful comparisons of biological objects"
+- "Arithmetic methods (`__add__`, `__mul__`, etc.) enable natural operations on sequences and measurements"
+- "Collection methods (`__len__`, `__getitem__`, `__iter__`) make objects behave like built-in containers"
+- "The `__call__` method turns instances into callable functions, perfect for configurable analysis tools"
+- "String representation (`__repr__`, `__str__`) provides meaningful output for debugging and display"
 ---
 
 ## Introduction to Special Methods
