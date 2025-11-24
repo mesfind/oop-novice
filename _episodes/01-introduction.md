@@ -160,7 +160,7 @@ print(type(new_seq))
 {: .language-python}
 
 ~~~
-lass 'Bio.Seq.Seqeq'>
+class 'Bio.Seq.Seqeq'>
 ~~~
 {: .output}
 
