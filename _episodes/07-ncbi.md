@@ -23,7 +23,6 @@ keypoints:
 - "`esummary`"" get summary information efficiently"
 - "Search History work with large result sets"
 - "Multiple Databases Access Gene, Protein, Taxonomy, and more"
-
 ---
 
 ## Introduction to NCBI Entrez
@@ -585,8 +584,6 @@ if __name__ == "__main__":
     articles = reviewer.fetch_article_details(search_results)
     reviewer.analyze_results(articles)
 ```
-
-
 
 
 {% include links.md %}
