@@ -547,6 +547,17 @@ analyze_multi_chain_structure(multi_structure)
 
 ## Basic Structural Alignment
 
+Basic structural alignment in Biopython can be performed using the Bio.PDB.StructureAlignment module, which provides tools to align two protein structures based on sequence alignment and map residues correspondingly. This class initializes with a sequence alignment and two structure models and can produce mappings of equivalent residues between the structures.
+
+Key features of Bio.PDB.StructureAlignment include
+
+- Initializing with FASTA sequence alignment and structure models.
+
+- Generating dictionaries mapping corresponding residues between two structures.
+
+- Providing iterators over pairs of aligned residues for detailed comparison or further analysis.
+
+
 ```python
 def simple_structure_alignment(structure1, structure2):
     """Perform simple structure alignment using CA atoms"""
