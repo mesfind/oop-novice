@@ -3,13 +3,13 @@ title: "Structural Bioinformatics with Biopython"
 teaching: 35
 exercises: 25
 questions:
-- "How can I work with protein structures using Biopython 1.86?"
+- "How can I work with protein structures using Biopython?"
 - "What tools does Biopython provide for PDB file manipulation?"
 - "How can I analyze protein structures and calculate basic properties?"
 - "What methods are available for structural analysis in current Biopython versions?"
 
 objectives:
-- "Parse and manipulate PDB files with Biopython 1.86"
+- "Parse and manipulate PDB files with Biopython"
 - "Extract structural information like sequences and basic properties"
 - "Calculate distances, angles, and basic structural metrics"
 - "Work with chains, residues, and atoms in protein structures"
@@ -24,7 +24,7 @@ keypoints:
 
 ## Introduction to Structural Bioinformatics with Biopython
 
-Biopython's `Bio.PDB` module provides powerful tools for working with macromolecular structures. This lesson focuses on compatible code for Biopython version 1.86, ensuring all examples work with this specific version.
+Biopython's `Bio.PDB` module provides powerful tools for working with macromolecular structures. This lesson focuses on compatible code for Biopython, ensuring all examples work with this specific version.
 
 First, let's check the Biopython version and import necessary modules:
 
