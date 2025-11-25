@@ -1,5 +1,5 @@
 ---
-title: "Structural Bioinformatics with Biopython 1.86"
+title: "Structural Bioinformatics with Biopython"
 teaching: 35
 exercises: 25
 questions:
